@@ -35,7 +35,7 @@ namespace ContabilidadAPI.Managers
             return resultado.UltimoId;
         }
 
-        protected List<T> Paginar(List<T> lista, AbstractWhere where)
+        protected List<T> Paginar<T>(List<T> lista, AbstractWhere where)
         {
             where.TotalRegistros = lista.Count;
 
