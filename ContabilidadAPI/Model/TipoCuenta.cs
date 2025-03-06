@@ -31,7 +31,24 @@ namespace ContabilidadAPI.Model
         [BsonRepresentation(BsonType.String)]
         public TipoOrigen Origen { get; set; }
 
+        [BsonRepresentation(BsonType.Boolean)]
         public bool Estado { get; set; } = true;
+
+        [BsonRepresentation(BsonType.DateTime)]
+        public DateTime FechaCreacion { get; set; }
+
+        [BsonRepresentation(BsonType.DateTime)]
+        public DateTime FechaActualizacion { get; set; }
+        #endregion
+
+        #region Where
+        public class Where : AbstractWhere
+        {
+            public int Id { get; set; }
+            public bool? Estado { get; set; }
+            public string? Descripcion { get; set; }
+            public string? Origen { get; set; }
+        }
         #endregion
     }
 }
