@@ -23,12 +23,13 @@ namespace ContabilidadAPI.Model
         public IMongoCollection<EntradaContable> EntradasContables => _database.GetCollection<EntradaContable>(Constantes.ENTIDAD_ENTRADA_CONTABLE);
     }
 
+    #region Clases Auxiliares
     public abstract class AbstractWhere
     {
         public bool EsPaginable { get; set; } = true;
         public int IndicePagina { get; set; } = 1;
         public int CantidadPagina { get; set; } = 15;
         public int TotalRegistros { get; set; }
-
     }
+    #endregion
 }

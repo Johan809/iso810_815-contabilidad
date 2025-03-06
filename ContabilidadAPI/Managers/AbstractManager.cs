@@ -6,8 +6,8 @@ namespace ContabilidadAPI.Managers
     public abstract class AbstractManager<T>
     {
         #region Constructor
-        protected readonly EntityContext Context;
         protected readonly ILogger<T> Logger;
+        protected readonly EntityContext Context;
 
         protected AbstractManager(EntityContext context, ILogger<T> logger)
         {
@@ -35,12 +35,14 @@ namespace ContabilidadAPI.Managers
             return resultado.UltimoId;
         }
 
-        protected List<T> Paginar<T>(List<T> lista, AbstractWhere where)
+        protected List<T> Paginar(List<T> lista, AbstractWhere where)
         {
             where.TotalRegistros = lista.Count;
 
             if (where.EsPaginable)
             {
+                if (where.IndicePagina <= 0)
+                    where.IndicePagina = 1;
                 return lista.Skip((where.IndicePagina - 1) * where.CantidadPagina)
                     .Take(where.CantidadPagina).ToList();
             }
