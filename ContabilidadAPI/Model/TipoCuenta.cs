@@ -14,6 +14,21 @@ namespace ContabilidadAPI.Model
             [EnumMember(Value = "CR")]
             Credito
         }
+        public const string TIPO_ORIGEN_DEBITO = "DB";
+        public const string TIPO_ORIGEN_DEBITO_LABEL = "Débito";
+        public const string TIPO_ORIGEN_CREDITO = "CR";
+        public const string TIPO_ORIGEN_CREDITO_LABEL = "Crédito";
+        #endregion
+
+        #region Constructor
+        public TipoCuenta() { }
+
+        public TipoCuenta(BaseDTO dto)
+        {
+            Descripcion = dto.Descripcion;
+            Origen = dto.Origen;
+            Estado = dto.Estado;
+        }
         #endregion
 
         #region Propiedades
@@ -29,7 +44,24 @@ namespace ContabilidadAPI.Model
 
         [BsonRequired]
         [BsonRepresentation(BsonType.String)]
-        public TipoOrigen Origen { get; set; }
+        public string? Origen { get; set; }
+
+        [BsonIgnore]
+        public string OrigenDesc
+        {
+            get
+            {
+                switch (Origen)
+                {
+                    case TIPO_ORIGEN_DEBITO:
+                        return TIPO_ORIGEN_DEBITO_LABEL;
+                    case TIPO_ORIGEN_CREDITO:
+                        return TIPO_ORIGEN_CREDITO_LABEL;
+                    default:
+                        return string.Empty;
+                }
+            }
+        }
 
         [BsonRepresentation(BsonType.Boolean)]
         public bool Estado { get; set; } = true;
@@ -48,6 +80,23 @@ namespace ContabilidadAPI.Model
             public bool? Estado { get; set; }
             public string? Descripcion { get; set; }
             public string? Origen { get; set; }
+        }
+        #endregion
+
+        #region DTO
+        public abstract class BaseDTO
+        {
+            public string Descripcion { get; set; } = "";
+            public string? Origen { get; set; }
+            public bool Estado { get; set; } = true;
+        }
+
+        public class CrearDTO : BaseDTO { }
+
+        public class EditarDTO : BaseDTO
+        {
+            public string? ObjectId { get; set; }
+            public int Id { get; set; }
         }
         #endregion
     }

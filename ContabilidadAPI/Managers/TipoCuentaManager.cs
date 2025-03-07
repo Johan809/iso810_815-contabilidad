@@ -58,7 +58,7 @@ namespace ContabilidadAPI.Managers
                     filtro &= filtroBuilder.Regex(x => x.Descripcion, new BsonRegularExpression(where.Descripcion, "i"));
 
                 if (!string.IsNullOrEmpty(where.Origen))
-                    filtro &= filtroBuilder.Eq(x => x.Origen, Enum.Parse<TipoCuenta.TipoOrigen>(where.Origen));
+                    filtro &= filtroBuilder.Regex(x => x.Origen, new BsonRegularExpression(where.Descripcion, "i"));
 
                 List<TipoCuenta> resultados = await Context.TipoCuentas.Find(filtro).ToListAsync();
                 return Paginar(resultados, where);
@@ -75,7 +75,8 @@ namespace ContabilidadAPI.Managers
             if (string.IsNullOrWhiteSpace(tipoCuenta.Descripcion))
                 throw new ArgumentException("La descripción es obligatoria.");
 
-            if (!Enum.IsDefined(typeof(TipoCuenta.TipoOrigen), tipoCuenta.Origen))
+            if (tipoCuenta.Origen != TipoCuenta.TIPO_ORIGEN_CREDITO &&
+                tipoCuenta.Origen != TipoCuenta.TIPO_ORIGEN_DEBITO)
                 throw new ArgumentException("El origen no es válido.");
         }
 
