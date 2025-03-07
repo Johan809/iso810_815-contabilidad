@@ -27,7 +27,7 @@ namespace ContabilidadAPI.Model
         {
             Descripcion = dto.Descripcion;
             Origen = dto.Origen;
-            Estado = dto.Estado;
+            Estado = true;
         }
         #endregion
 
@@ -70,7 +70,7 @@ namespace ContabilidadAPI.Model
         public DateTime FechaCreacion { get; set; }
 
         [BsonRepresentation(BsonType.DateTime)]
-        public DateTime FechaActualizacion { get; set; }
+        public DateTime? FechaActualizacion { get; set; } = null;
         #endregion
 
         #region Where
@@ -88,15 +88,15 @@ namespace ContabilidadAPI.Model
         {
             public string Descripcion { get; set; } = "";
             public string? Origen { get; set; }
-            public bool Estado { get; set; } = true;
         }
 
-        public class CrearDTO : BaseDTO { }
+        public class TCCrearDTO : BaseDTO { }
 
-        public class EditarDTO : BaseDTO
+        public class TCEditarDTO : BaseDTO
         {
             public string? ObjectId { get; set; }
             public int Id { get; set; }
+            public bool Estado { get; set; } = true;
         }
         #endregion
     }

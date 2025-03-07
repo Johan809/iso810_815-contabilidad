@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ContabilidadAPI.Controllers
 {
     [ApiController]
-    [Route("Api/[controller]")]
+    [Route("api/[controller]")]
     public class TipoCuentaController : ControllerBase
     {
         private readonly ContabilidadService Service;
@@ -37,7 +37,7 @@ namespace ContabilidadAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] TipoCuenta.CrearDTO dto)
+        public async Task<IActionResult> Crear([FromBody] TipoCuenta.TCCrearDTO dto)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace ContabilidadAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, [FromBody] TipoCuenta.EditarDTO dto)
+        public async Task<IActionResult> Actualizar(int id, [FromBody] TipoCuenta.TCEditarDTO dto)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace ContabilidadAPI.Controllers
 
                 bool actualizado = await Service.TipoCuentaManager.ActualizarAsync(tipoCuenta);
                 if (!actualizado)
-                    return NotFound($"Tipo Cuenta con Id: {id} no encontrado");
+                    return BadRequest($"Tipo Cuenta con Id: {id} no pudo ser actualizado.");
 
                 return Ok(actualizado);
             }

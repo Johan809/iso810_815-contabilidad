@@ -5,6 +5,18 @@ namespace ContabilidadAPI.Model
 {
     public class TipoMoneda
     {
+        #region Constructor
+        public TipoMoneda() { }
+
+        public TipoMoneda(BaseDTO dto)
+        {
+            CodigoISO = dto.CodigoISO ?? "DOP";
+            Descripcion = dto.Descripcion ?? string.Empty;
+            UltimaTasaCambiaria = dto.UltimaTasaCambiaria;
+            Estado = true;
+        }
+        #endregion
+
         #region Propiedades
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -22,7 +34,7 @@ namespace ContabilidadAPI.Model
         [BsonRequired]
         [BsonRepresentation(BsonType.Decimal128)] // Usar Decimal128 para precisión financiera
         public decimal UltimaTasaCambiaria { get; set; } = 1.00M;
-        
+
         [BsonRepresentation(BsonType.Boolean)]
         public bool Estado { get; set; } = true;
 
@@ -30,7 +42,7 @@ namespace ContabilidadAPI.Model
         public DateTime FechaCreacion { get; set; }
 
         [BsonRepresentation(BsonType.DateTime)]
-        public DateTime FechaActualizacion { get; set; }
+        public DateTime? FechaActualizacion { get; set; } = null;
         #endregion
 
         #region Where
@@ -40,6 +52,24 @@ namespace ContabilidadAPI.Model
             public bool? Estado { get; set; }
             public string? CodigoISO { get; set; }
             public string? Descripcion { get; set; }
+        }
+        #endregion
+
+        #region DTO
+        public abstract class BaseDTO
+        {
+            public string? CodigoISO { get; set; }
+            public string? Descripcion { get; set; }
+            public decimal UltimaTasaCambiaria { get; set; } = 1.00M;
+        }
+
+        public class TMCrearDTO : BaseDTO { }
+
+        public class TMEditarDTO : BaseDTO
+        {
+            public string? ObjectId { get; set; }
+            public int Id { get; set; }
+            public bool Estado { get; set; } = true;
         }
         #endregion
     }

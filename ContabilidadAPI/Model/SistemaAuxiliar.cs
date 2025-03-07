@@ -5,6 +5,16 @@ namespace ContabilidadAPI.Model
 {
     public class SistemaAuxiliar
     {
+        #region Constructor
+        public SistemaAuxiliar() { }
+
+        public SistemaAuxiliar(BaseDTO dto)
+        {
+            Descripcion = dto.Descripcion;
+            Estado = true;
+        }
+        #endregion
+
         #region Propiedades
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -23,7 +33,7 @@ namespace ContabilidadAPI.Model
         public DateTime FechaCreacion { get; set; }
 
         [BsonRepresentation(BsonType.DateTime)]
-        public DateTime FechaActualizacion { get; set; }
+        public DateTime? FechaActualizacion { get; set; } = null;
         #endregion
 
         #region Where
@@ -31,6 +41,20 @@ namespace ContabilidadAPI.Model
         {
             public string? Descripcion { get; set; }
             public bool? Estado { get; set; }
+        }
+        #endregion
+
+        #region DTO
+        public abstract class BaseDTO
+        {
+            public string Descripcion { get; set; } = "";
+        }
+
+        public class SACrearDTO : BaseDTO { }
+
+        public class SAEditarDTO : BaseDTO
+        {
+            public bool Estado { get; set; } = true;
         }
         #endregion
     }
