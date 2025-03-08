@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace ContabilidadAPI.Model
@@ -90,8 +91,10 @@ namespace ContabilidadAPI.Model
             public string? Origen { get; set; }
         }
 
+        [DisplayName("DTO_Crear_TipoCuenta")]
         public class TCCrearDTO : BaseDTO { }
 
+        [DisplayName("DTO_Editar_TipoCuenta")]
         public class TCEditarDTO : BaseDTO
         {
             public string? ObjectId { get; set; }

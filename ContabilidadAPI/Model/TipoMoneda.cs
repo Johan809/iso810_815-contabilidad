@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 
 namespace ContabilidadAPI.Model
 {
@@ -63,8 +64,10 @@ namespace ContabilidadAPI.Model
             public decimal UltimaTasaCambiaria { get; set; } = 1.00M;
         }
 
+        [DisplayName("DTO_Crear_TipoMoneda")]
         public class TMCrearDTO : BaseDTO { }
 
+        [DisplayName("DTO_Editar_TipoMoneda")]
         public class TMEditarDTO : BaseDTO
         {
             public string? ObjectId { get; set; }

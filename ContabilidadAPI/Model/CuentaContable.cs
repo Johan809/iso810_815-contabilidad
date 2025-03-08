@@ -1,10 +1,24 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 
 namespace ContabilidadAPI.Model
 {
     public class CuentaContable
     {
+        #region Constructor
+        public CuentaContable() { }
+
+        public CuentaContable(BaseDTO dto)
+        {
+            //TipoCuenta y CuentaMayor se settean de otra forma
+            Descripcion = dto.Descripcion;
+            PermiteTransacciones = dto.PermiteTransacciones;
+            Nivel = dto.Nivel;
+            Balance = dto.Balance;
+        }
+        #endregion
+
         #region Propiedades
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -41,7 +55,7 @@ namespace ContabilidadAPI.Model
         public DateTime FechaCreacion { get; set; }
 
         [BsonRepresentation(BsonType.DateTime)]
-        public DateTime FechaActualizacion { get; set; }
+        public DateTime? FechaActualizacion { get; set; }
         #endregion
 
         #region Where
@@ -52,6 +66,27 @@ namespace ContabilidadAPI.Model
             public int? Nivel { get; set; }
             public bool? Estado { get; set; }
             public string? CuentaMayorId { get; set; }
+        }
+        #endregion
+
+        #region DTO
+        public abstract class BaseDTO
+        {
+            public string Descripcion { get; set; } = string.Empty;
+            public int TipoCuentaId { get; set; }
+            public bool PermiteTransacciones { get; set; } = true;
+            public int Nivel { get; set; }
+            public decimal Balance { get; set; } = 0;
+            public int? CuentaMayorId { get; set; }
+        }
+
+        [DisplayName("DTO_Crear_CuentaContable")]
+        public class CC_CrearDTO : BaseDTO { }
+
+        [DisplayName("DTO_Editar_CuentaContable")]
+        public class CC_EditarDTO : BaseDTO
+        {
+            public bool Estado { get; set; }
         }
         #endregion
     }

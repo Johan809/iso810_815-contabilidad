@@ -54,12 +54,6 @@ namespace ContabilidadAPI.Managers
                 if (!string.IsNullOrEmpty(where.Descripcion))
                     filtro &= filtroBuilder.Regex(x => x.Descripcion, new BsonRegularExpression(where.Descripcion, "i"));
 
-                if (!string.IsNullOrEmpty(where.TipoMovimiento))
-                    filtro &= filtroBuilder.Eq(x => x.TipoMovimiento, where.TipoMovimiento);
-
-                if (!string.IsNullOrEmpty(where.CuentaId))
-                    filtro &= filtroBuilder.Eq(x => x.CuentaId, where.CuentaId);
-
                 if (!string.IsNullOrEmpty(where.SistemaAuxiliarId))
                     filtro &= filtroBuilder.Eq(x => x.SistemaAuxiliarId, where.SistemaAuxiliarId);
 
@@ -68,6 +62,12 @@ namespace ContabilidadAPI.Managers
 
                 if (where.FechaFin.HasValue)
                     filtro &= filtroBuilder.Lte(x => x.FechaAsiento, where.FechaFin.Value);
+
+                if (!string.IsNullOrEmpty(where.TipoMovimiento))
+                    filtro &= filtroBuilder.ElemMatch(x => x.Detalles, d => d.TipoMovimiento == where.TipoMovimiento);
+
+                if (!string.IsNullOrEmpty(where.CuentaId))
+                    filtro &= filtroBuilder.ElemMatch(x => x.Detalles, d => d.CuentaId == where.CuentaId);
 
                 List<EntradaContable> resultados = await Context.EntradasContables.Find(filtro).ToListAsync();
                 return Paginar(resultados, where);
@@ -92,26 +92,32 @@ namespace ContabilidadAPI.Managers
             if (sistemaAuxiliar == null)
                 throw new ArgumentException("El sistema auxiliar especificado no existe.");
 
-            if (string.IsNullOrWhiteSpace(entrada.CuentaId) || !ObjectId.TryParse(entrada.CuentaId, out _))
-                throw new ArgumentException("El CuentaId es obligatorio y debe ser un ObjectId válido.");
+            if (entrada.Detalles == null || !entrada.Detalles.Any())
+                throw new ArgumentException("Debe haber al menos un detalle en la entrada contable.");
 
-            var cuentaContable = Context.CuentasContables
-                .Find(x => x.ObjectId == entrada.CuentaId).FirstOrDefault();
-            if (cuentaContable == null)
-                throw new ArgumentException("La cuenta contable especificada no existe.");
+            foreach (var detalle in entrada.Detalles)
+            {
+                if (string.IsNullOrWhiteSpace(detalle.CuentaId) || !ObjectId.TryParse(detalle.CuentaId, out _))
+                    throw new ArgumentException("El CuentaId es obligatorio y debe ser un ObjectId válido.");
 
-            if (!cuentaContable.PermiteTransacciones)
-                throw new ArgumentException("La cuenta contable seleccionada no permite transacciones.");
+                var cuentaContable = Context.CuentasContables
+                    .Find(x => x.ObjectId == detalle.CuentaId).FirstOrDefault();
+                if (cuentaContable == null)
+                    throw new ArgumentException("La cuenta contable especificada no existe.");
 
-            if (entrada.TipoMovimiento != EntradaContable.TIPO_MOV_DEBITO &&
-                entrada.TipoMovimiento != EntradaContable.TIPO_MOV_CREDITO)
-                throw new ArgumentException("El tipo de movimiento debe ser 'DB' (débito) o 'CR' (crédito).");
+                if (!cuentaContable.PermiteTransacciones)
+                    throw new ArgumentException("La cuenta contable seleccionada no permite transacciones.");
+
+                if (detalle.TipoMovimiento != EntradaContableDetalle.TIPO_MOV_DEBITO &&
+                    detalle.TipoMovimiento != EntradaContableDetalle.TIPO_MOV_CREDITO)
+                    throw new ArgumentException("El tipo de movimiento debe ser 'DB' (débito) o 'CR' (crédito).");
+
+                if (detalle.MontoAsiento <= 0)
+                    throw new ArgumentException("El monto del asiento contable debe ser mayor a 0.");
+            }
 
             if (entrada.FechaAsiento > DateTime.Now)
                 throw new ArgumentException("La fecha del asiento contable no puede ser futura.");
-
-            if (entrada.MontoAsiento <= 0)
-                throw new ArgumentException("El monto del asiento contable debe ser mayor a 0.");
         }
 
         public async Task CrearAsync(EntradaContable entrada)
@@ -121,7 +127,6 @@ namespace ContabilidadAPI.Managers
                 Validar(entrada);
                 entrada.Id = await GenerarNuevoIdAsync(Constantes.ENTIDAD_ENTRADA_CONTABLE);
                 entrada.FechaCreacion = DateTime.Now;
-                entrada.FechaActualizacion = DateTime.Now;
 
                 await Context.EntradasContables.InsertOneAsync(entrada);
                 Logger.LogInformation("EntradaContable creada con Id: {Id}, ObjectId: {ObjectId}", entrada.Id, entrada.ObjectId);

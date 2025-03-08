@@ -19,8 +19,6 @@ namespace ContabilidadAPI.Managers
         #region Metodos
         protected async Task<int> GenerarNuevoIdAsync(string entidad)
         {
-            Logger.LogInformation("Generando nuevo Id para la entidad: {Entidad}", entidad);
-
             var filtro = Builders<Contador>.Filter.Eq(c => c.Entidad, entidad);
             var actualizacion = Builders<Contador>.Update.Inc(c => c.UltimoId, 1);
             var opciones = new FindOneAndUpdateOptions<Contador>
@@ -30,8 +28,6 @@ namespace ContabilidadAPI.Managers
             };
 
             var resultado = await Context.Contadores.FindOneAndUpdateAsync(filtro, actualizacion, opciones);
-            Logger.LogInformation("Nuevo Id generado para {Entidad}: {NuevoId}", entidad, resultado.UltimoId);
-
             return resultado.UltimoId;
         }
 

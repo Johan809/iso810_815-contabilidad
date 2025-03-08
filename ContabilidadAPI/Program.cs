@@ -1,6 +1,8 @@
 using Serilog;
 using ContabilidadAPI.Model;
 using ContabilidadAPI.Service;
+using System.ComponentModel;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,15 +20,14 @@ builder.Services.AddSingleton<EntityContext>();
 builder.Services.AddSingleton<ContabilidadService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.CustomSchemaIds(x => x.GetCustomAttribute<DisplayNameAttribute>(false)
+        ?.DisplayName ?? x.Name);
+});
 #endregion
 
 var app = builder.Build();
-
-//var configuration = new ConfigurationBuilder()
-//    .AddJsonFile("appsettings.json")
-//    .Build();
-//var context = new EntityContext(configuration);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

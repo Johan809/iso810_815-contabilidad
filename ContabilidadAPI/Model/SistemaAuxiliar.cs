@@ -1,5 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel;
 
 namespace ContabilidadAPI.Model
 {
@@ -50,8 +52,10 @@ namespace ContabilidadAPI.Model
             public string Descripcion { get; set; } = "";
         }
 
+        [DisplayName("DTO_Crear_SistemaAuxiliar")]
         public class SACrearDTO : BaseDTO { }
 
+        [DisplayName("DTO_Editar_SistemaAuxiliar")]
         public class SAEditarDTO : BaseDTO
         {
             public bool Estado { get; set; } = true;
