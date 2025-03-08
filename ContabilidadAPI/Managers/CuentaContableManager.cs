@@ -51,6 +51,9 @@ namespace ContabilidadAPI.Managers
                 if (where.Id > 0)
                     filtro &= filtroBuilder.Eq(x => x.Id, where.Id);
 
+                if (where.IdList != null && where.IdList.Count > 0)
+                    filtro &= filtroBuilder.In(x => x.Id, where.IdList);
+
                 if (!string.IsNullOrEmpty(where.Descripcion))
                     filtro &= filtroBuilder.Regex(x => x.Descripcion, new BsonRegularExpression(where.Descripcion, "i"));
 

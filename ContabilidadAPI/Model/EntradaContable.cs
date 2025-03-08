@@ -13,6 +13,18 @@ namespace ContabilidadAPI.Model
         public const string ESTADO_CANCELADO_LABEL = "Cancelado";
         #endregion
 
+        #region Constructor
+        public EntradaContable() { }
+
+        public EntradaContable(BaseDTO dto)
+        {
+            Descripcion = dto.Descripcion;
+            FechaAsiento = dto.FechaAsiento;
+            Estado = ESTADO_REGISTRADO;
+            Detalles = [];
+        }
+        #endregion
+
         #region Propiedades
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -37,8 +49,6 @@ namespace ContabilidadAPI.Model
         public string Estado { get; set; } = ESTADO_REGISTRADO;
 
         [BsonRequired]
-        [BsonElement("Detalles")]
-        [BsonRepresentation(BsonType.Array)]
         public List<EntradaContableDetalle> Detalles { get; set; } = new();
 
         [BsonRepresentation(BsonType.DateTime)]
@@ -113,11 +123,9 @@ namespace ContabilidadAPI.Model
         public string TipoMovimiento { get; set; } = TIPO_MOV_DEBITO;
 
         [BsonRequired]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string CuentaId { get; set; } = string.Empty;
 
         [BsonRequired]
-        [BsonRepresentation(BsonType.Decimal128)]
         public decimal MontoAsiento { get; set; } = 0.00M;
 
         [BsonIgnore]

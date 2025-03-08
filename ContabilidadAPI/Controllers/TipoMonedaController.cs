@@ -10,9 +10,9 @@ namespace ContabilidadAPI.Controllers
     public class TipoMonedaController : ControllerBase
     {
         private readonly ContabilidadService Service;
-        private readonly ILogger<TipoCuentaController> Logger;
+        private readonly ILogger<TipoMonedaController> Logger;
 
-        public TipoMonedaController(ContabilidadService service, ILogger<TipoCuentaController> logger)
+        public TipoMonedaController(ContabilidadService service, ILogger<TipoMonedaController> logger)
         {
             Service = service;
             Logger = logger;

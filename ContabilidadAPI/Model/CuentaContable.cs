@@ -62,6 +62,7 @@ namespace ContabilidadAPI.Model
         public class Where : AbstractWhere
         {
             public int Id { get; set; }
+            public List<int>? IdList { get; set; }
             public string? Descripcion { get; set; }
             public int? Nivel { get; set; }
             public bool? Estado { get; set; }

@@ -92,9 +92,12 @@ namespace ContabilidadAPI.Managers
             if (sistemaAuxiliar == null)
                 throw new ArgumentException("El sistema auxiliar especificado no existe.");
 
-            if (entrada.Detalles == null || !entrada.Detalles.Any())
-                throw new ArgumentException("Debe haber al menos un detalle en la entrada contable.");
+            if (entrada.Detalles == null || entrada.Detalles.Count < 2)
+                throw new ArgumentException("Debe haber al menos dos detalles en la entrada contable.");
 
+            // Contadores para validar los tipos de movimiento y sumatorias
+            int cantidadDebitos = 0, cantidadCreditos = 0;
+            decimal sumatoriaDebitos = 0, sumatoriaCreditos = 0;
             foreach (var detalle in entrada.Detalles)
             {
                 if (string.IsNullOrWhiteSpace(detalle.CuentaId) || !ObjectId.TryParse(detalle.CuentaId, out _))
@@ -114,7 +117,30 @@ namespace ContabilidadAPI.Managers
 
                 if (detalle.MontoAsiento <= 0)
                     throw new ArgumentException("El monto del asiento contable debe ser mayor a 0.");
+
+                // Contamos los tipos de movimientos y sumamos montos
+                if (detalle.TipoMovimiento == EntradaContableDetalle.TIPO_MOV_DEBITO)
+                {
+                    cantidadDebitos++;
+                    sumatoriaDebitos += detalle.MontoAsiento;
+                }
+                else if (detalle.TipoMovimiento == EntradaContableDetalle.TIPO_MOV_CREDITO)
+                {
+                    cantidadCreditos++;
+                    sumatoriaCreditos += detalle.MontoAsiento;
+                }
             }
+
+            // Validar que haya al menos un débito y un crédito
+            if (cantidadDebitos == 0)
+                throw new ArgumentException("Debe haber al menos un detalle de tipo 'DB' (débito).");
+
+            if (cantidadCreditos == 0)
+                throw new ArgumentException("Debe haber al menos un detalle de tipo 'CR' (crédito).");
+
+            // Validar que la sumatoria de débitos sea igual a la sumatoria de créditos
+            if (sumatoriaDebitos != sumatoriaCreditos)
+                throw new ArgumentException("La sumatoria de los montos en 'DB' (débito) debe ser igual a la sumatoria en 'CR' (crédito).");
 
             if (entrada.FechaAsiento > DateTime.Now)
                 throw new ArgumentException("La fecha del asiento contable no puede ser futura.");
@@ -127,6 +153,10 @@ namespace ContabilidadAPI.Managers
                 Validar(entrada);
                 entrada.Id = await GenerarNuevoIdAsync(Constantes.ENTIDAD_ENTRADA_CONTABLE);
                 entrada.FechaCreacion = DateTime.Now;
+                entrada.Detalles.ForEach(d =>
+                {
+                    d.ObjectId ??= ObjectId.GenerateNewId().ToString();
+                });
 
                 await Context.EntradasContables.InsertOneAsync(entrada);
                 Logger.LogInformation("EntradaContable creada con Id: {Id}, ObjectId: {ObjectId}", entrada.Id, entrada.ObjectId);
@@ -148,16 +178,26 @@ namespace ContabilidadAPI.Managers
             {
                 Validar(entrada);
                 entrada.FechaActualizacion = DateTime.Now;
+                entrada.Detalles.ForEach(d =>
+                {
+                    d.ObjectId ??= ObjectId.GenerateNewId().ToString();
+                });
 
-                var resultado = await Context.EntradasContables.ReplaceOneAsync(
-                    x => x.ObjectId == entrada.ObjectId,
-                    entrada
-                );
+                var filtro = Builders<EntradaContable>.Filter.Eq(x => x.ObjectId, entrada.ObjectId);
+                var actualizacion = Builders<EntradaContable>.Update
+                    .Set(x => x.Descripcion, entrada.Descripcion)
+                    .Set(x => x.FechaAsiento, entrada.FechaAsiento)
+                    .Set(x => x.Estado, entrada.Estado)
+                    .Set(x => x.SistemaAuxiliarId, entrada.SistemaAuxiliarId)
+                    .Set(x => x.FechaActualizacion, entrada.FechaActualizacion)
+                    .Set(x => x.Detalles, entrada.Detalles); // Se sobrescriben los detalles
+
+                var resultado = await Context.EntradasContables.UpdateOneAsync(filtro, actualizacion);
 
                 bool actualizado = resultado.ModifiedCount > 0;
                 if (actualizado)
                 {
-                    Logger.LogInformation("EntradaContable actualizada correctamente.");
+                    Logger.LogInformation("EntradaContable con Id {Id} actualizada correctamente.", entrada.Id);
                 }
                 else
                 {

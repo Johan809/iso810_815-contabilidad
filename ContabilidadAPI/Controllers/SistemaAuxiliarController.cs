@@ -10,9 +10,9 @@ namespace ContabilidadAPI.Controllers
     public class SistemaAuxiliarController : ControllerBase
     {
         private readonly ContabilidadService Service;
-        private readonly ILogger<TipoCuentaController> Logger;
+        private readonly ILogger<SistemaAuxiliarController> Logger;
 
-        public SistemaAuxiliarController(ContabilidadService service, ILogger<TipoCuentaController> logger)
+        public SistemaAuxiliarController(ContabilidadService service, ILogger<SistemaAuxiliarController> logger)
         {
             Service = service;
             Logger = logger;

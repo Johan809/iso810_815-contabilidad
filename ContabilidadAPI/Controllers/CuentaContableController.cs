@@ -10,9 +10,9 @@ namespace ContabilidadAPI.Controllers
     public class CuentaContableController : ControllerBase
     {
         private readonly ContabilidadService Service;
-        private readonly ILogger<TipoCuentaController> Logger;
+        private readonly ILogger<CuentaContableController> Logger;
 
-        public CuentaContableController(ContabilidadService service, ILogger<TipoCuentaController> logger)
+        public CuentaContableController(ContabilidadService service, ILogger<CuentaContableController> logger)
         {
             Service = service;
             Logger = logger;
@@ -23,7 +23,7 @@ namespace ContabilidadAPI.Controllers
         {
             var cuentaContable = await Service.CuentaContableManager.Buscar(id);
             if (cuentaContable is null)
-                return NotFound($"Cuenta Contable con Id: {id} no encontrado");
+                return NotFound($"Cuenta Contable con Id: {id} no encontrada");
 
             return Ok(cuentaContable);
         }
@@ -76,7 +76,7 @@ namespace ContabilidadAPI.Controllers
                 bool actualizado = await Service.CuentaContableManager
                     .ActualizarAsync(cuentaContable);
                 if (!actualizado)
-                    return BadRequest($"Cuenta Contable con Id: {id} no pudo ser actualizado.");
+                    return BadRequest($"Cuenta Contable con Id: {id} no pudo ser actualizada.");
 
                 return Ok(actualizado);
             }
