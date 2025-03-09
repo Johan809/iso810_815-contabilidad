@@ -3,3 +3,5 @@
 ################################################################################
 
 /ContabilidadAPI/appsettings.Development.json
+node_modules/
+
