@@ -72,7 +72,7 @@ namespace ContabilidadAPI.Controllers
                 if (!actualizado)
                     return BadRequest($"Sistema Auxiliar con Id: {id} no pudo ser actualizado.");
 
-                return Ok(actualizado);
+                return Ok(sistemaAuxiliar);
             }
             catch (ArgumentException ex)
             {

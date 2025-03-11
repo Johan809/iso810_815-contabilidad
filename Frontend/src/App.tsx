@@ -13,6 +13,7 @@ import Tasks from "./pages/Tasks";
 import Projects from "./pages/Projects";
 import TipoMoneda from "./pages/TipoMoneda";
 import TipoCuenta from "./pages/TipoCuenta";
+import SistemaAuxiliar from "./pages/SistemaAuxiliar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/projects" element={<Projects />} />
             <Route path="/tipo-moneda" element={<TipoMoneda />} />
             <Route path="/tipo-cuenta" element={<TipoCuenta />} />
+            <Route path="/sistema-auxiliar" element={<SistemaAuxiliar />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
