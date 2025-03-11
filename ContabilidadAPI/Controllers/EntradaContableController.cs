@@ -137,7 +137,7 @@ namespace ContabilidadAPI.Controllers
                 if (!actualizado)
                     return BadRequest($"Entrada Contable con Id: {id} no pudo ser actualizada.");
 
-                return Ok(actualizado);
+                return Ok(entradaContable);
             }
             catch (ArgumentException ex)
             {
