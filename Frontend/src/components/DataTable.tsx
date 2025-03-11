@@ -100,15 +100,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, onEdit, onDelete }
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => onDelete(item)}
-                        className="h-8 w-8 transition-all duration-200 hover:text-destructive"
-                      >
-                        <Trash className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
+                     {/* Delete button here */}
                     </div>
                   </TableCell>
                 </TableRow>

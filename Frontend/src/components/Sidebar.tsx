@@ -11,7 +11,10 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  HandCoins 
+  FileText,
+  Layers,
+  Shapes,
+  Wallet 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -28,10 +31,10 @@ interface SidebarItem {
 
 const mainItems: SidebarItem[] = [
   { icon: Home, label: 'Dashboard', href: '/' },
-  { icon: Users, label: 'Cuenta contable', href: '/cuenta-contable' },
-  { icon: Package, label: 'Sistema Auxiliar', href: '/sistema-auxiliar' },
-  { icon: CheckSquare, label: 'Tipo de cuenta', href: '/tipo-cuenta' },
-  { icon: HandCoins, label: 'Moneda', href: '/tipo-moneda' },
+  { icon: FileText, label: 'Cuenta contable', href: '/cuenta-contable' }, 
+  { icon: Layers, label: "Sistema Auxiliar", href: "/sistema-auxiliar" }, 
+  { icon: Shapes, label: "Tipo de cuenta", href: "/tipo-cuenta" }, 
+  { icon: Wallet, label: "Moneda", href: "/tipo-moneda" }
 ];
 
 const otherItems: SidebarItem[] = [
