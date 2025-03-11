@@ -28,7 +28,7 @@ interface SidebarItem {
 
 const mainItems: SidebarItem[] = [
   { icon: Home, label: 'Dashboard', href: '/' },
-  { icon: Users, label: 'Users', href: '/users' },
+  { icon: Users, label: 'Cuenta contable', href: '/cuenta-contable' },
   { icon: Package, label: 'Sistema Auxiliar', href: '/sistema-auxiliar' },
   { icon: CheckSquare, label: 'Tipo de cuenta', href: '/tipo-cuenta' },
   { icon: HandCoins, label: 'Moneda', href: '/tipo-moneda' },

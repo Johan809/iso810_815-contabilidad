@@ -14,6 +14,7 @@ import Projects from "./pages/Projects";
 import TipoMoneda from "./pages/TipoMoneda";
 import TipoCuenta from "./pages/TipoCuenta";
 import SistemaAuxiliar from "./pages/SistemaAuxiliar";
+import CuentaContable from "./pages/CuentaContable";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/tipo-moneda" element={<TipoMoneda />} />
             <Route path="/tipo-cuenta" element={<TipoCuenta />} />
             <Route path="/sistema-auxiliar" element={<SistemaAuxiliar />} />
+            <Route path="/cuenta-contable" element={<CuentaContable />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
