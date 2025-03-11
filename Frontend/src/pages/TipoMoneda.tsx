@@ -139,7 +139,7 @@ const TipoMoneda = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold tracking-tight">Tipos de Moneda</h2>
         <Button onClick={handleCreateMoneda}>
-          <PackagePlus className="mr-2 h-4 w-4" /> Agregar Moneda
+            + Agregar Moneda Tipo de Moneda
         </Button>
       </div>
 

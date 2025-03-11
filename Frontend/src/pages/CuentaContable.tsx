@@ -150,6 +150,10 @@ const CuentaContable = () => {
 
   return (
     <div className="space-y-6">
+        <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-semibold">Cuentas Contables</h1>
+            <Button onClick={handleCreate}>+ Agregar Cuenta Contable</Button>
+        </div>
       <DataTable columns={columns} data={cuentasContables} onEdit={handleEdit} onDelete={(cc) => handleDelete(cc.id)} />
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={currentCuentaContable ? 'Editar Cuenta Contable' : 'Nueva Cuenta Contable'}>
         <CuentaContableForm cuentaContable={currentCuentaContable} tiposCuenta={tiposCuenta} cuentasContables={cuentasContables} onSubmit={handleSubmit} onCancel={() => setIsModalOpen(false)} />
