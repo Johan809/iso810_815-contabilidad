@@ -73,7 +73,7 @@ namespace ContabilidadAPI.Controllers
                 if (!actualizado)
                     return BadRequest($"Tipo Cuenta con Id: {id} no pudo ser actualizado.");
 
-                return Ok(actualizado);
+                return Ok(tipoCuenta);
             }
             catch (ArgumentException ex)
             {
