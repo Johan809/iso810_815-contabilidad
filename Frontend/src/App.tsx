@@ -11,6 +11,7 @@ import Users from "./pages/Users";
 import Products from "./pages/Products";
 import Tasks from "./pages/Tasks";
 import Projects from "./pages/Projects";
+import TipoMoneda from "./pages/TipoMoneda";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/products" element={<Products />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/tipo-moneda" element={<TipoMoneda />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

@@ -25,11 +25,25 @@ builder.Services.AddSwaggerGen(c =>
     c.CustomSchemaIds(x => x.GetCustomAttribute<DisplayNameAttribute>(false)
         ?.DisplayName ?? x.Name);
 });
+
+// ✅ Enable CORS to allow frontend access
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:8080") // Allow frontend URL
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 #endregion
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ✅ Use CORS before controllers
+app.UseCors("AllowFrontend");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -40,3 +54,4 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+

@@ -74,7 +74,8 @@ namespace ContabilidadAPI.Controllers
                 if (!actualizado)
                     return BadRequest($"Tipo Moneda con Id: {id} no pudo ser actualizado.");
 
-                return Ok(actualizado);
+                // ✅ FIX: Return the updated object instead of `true`
+                return Ok(tipoMoneda);
             }
             catch (ArgumentException ex)
             {
@@ -86,5 +87,6 @@ namespace ContabilidadAPI.Controllers
                 return StatusCode(500, Constantes.ERROR_SERVIDOR);
             }
         }
+
     }
 }

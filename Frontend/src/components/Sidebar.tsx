@@ -10,7 +10,8 @@ import {
   Home, 
   Settings,
   ChevronLeft,
-  ChevronRight 
+  ChevronRight,
+  HandCoins 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -30,7 +31,7 @@ const mainItems: SidebarItem[] = [
   { icon: Users, label: 'Users', href: '/users' },
   { icon: Package, label: 'Products', href: '/products' },
   { icon: CheckSquare, label: 'Tasks', href: '/tasks' },
-  { icon: Folders, label: 'Projects', href: '/projects' },
+  { icon: HandCoins, label: 'Moneda', href: '/tipo-moneda' },
 ];
 
 const otherItems: SidebarItem[] = [
@@ -47,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
     >
       <div className="flex h-16 items-center justify-between border-b px-4">
         {!isCollapsed && (
-          <span className="text-lg font-semibold tracking-tight animate-fade-in">Acme Inc.</span>
+          <span className="text-lg font-semibold tracking-tight animate-fade-in">Accounting</span>
         )}
         <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-auto h-8 w-8">
           {isCollapsed ? (

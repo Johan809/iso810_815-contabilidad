@@ -15,6 +15,7 @@ import { Pencil, Trash, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 interface Column {
   key: string;
   header: string;
+  render?: (row: any) => React.ReactNode;
 }
 
 interface DataTableProps {
@@ -85,8 +86,8 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, onEdit, onDelete }
                 >
                   {columns.map((column) => (
                     <TableCell key={`${item.id}-${column.key}`}>
-                      {item[column.key]}
-                    </TableCell>
+                    {column.render ? column.render(item) : item[column.key]}
+                  </TableCell>
                   ))}
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
