@@ -8,19 +8,6 @@ import { getCuentasContables, createCuentaContable, updateCuentaContable, delete
 import { getTiposCuenta } from '@/api/tipoCuentaApi';
 import { useToast } from '@/hooks/use-toast';
 
-const columns = [
-  { key: 'descripcion', header: 'Descripción' },
-  { key: 'tipoCuentaId', header: 'Tipo de Cuenta' },
-  { key: 'permiteTransacciones', header: 'Permite Transacciones', render: (row) => (row.permiteTransacciones ? '✅ Sí' : '❌ No') },
-  { key: 'nivel', header: 'Nivel' },
-  { key: 'balance', header: 'Balance' },
-  { key: 'cuentaMayorId', header: 'Cuenta Mayor' },
-  {
-    key: 'estado',
-    header: 'Estado',
-    render: (row) => (row.estado ? '✅ Activo' : '❌ Inactivo'),
-  },
-];
 
 const CuentaContableForm = ({ cuentaContable, tiposCuenta, cuentasContables, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -147,6 +134,24 @@ const CuentaContable = () => {
     }
     setIsModalOpen(false);
   };
+
+  const columns = [
+    { key: 'descripcion', header: 'Descripción' },
+    { 
+      key: 'tipoCuenta', 
+      header: 'Tipo de Cuenta', 
+      render: (row) => tiposCuenta.find(tc => tc.objectId === row.tipoCuentaId)?.descripcion || 'N/A' 
+    },
+    { key: 'permiteTransacciones', header: 'Permite Transacciones', render: (row) => (row.permiteTransacciones ? '✅ Sí' : '❌ No') },
+    { key: 'nivel', header: 'Nivel' },
+    { key: 'balance', header: 'Balance' },
+    { 
+      key: 'cuentaMayor', 
+      header: 'Cuenta Mayor', 
+      render: (row) => cuentasContables.find(c => c.objectId === row.cuentaMayorId)?.descripcion || 'N/A' 
+    },
+    { key: 'estado', header: 'Estado', render: (row) => (row.estado ? '✅ Activo' : '❌ Inactivo') },
+  ];
 
   return (
     <div className="space-y-6">
