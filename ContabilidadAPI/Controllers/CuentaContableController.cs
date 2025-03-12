@@ -2,6 +2,7 @@
 using ContabilidadAPI.Model;
 using ContabilidadAPI.Service;
 using Microsoft.AspNetCore.Mvc;
+using CuentaContableModel = ContabilidadAPI.Model.CuentaContable.CC_ListarDTO;
 
 namespace ContabilidadAPI.Controllers
 {
@@ -25,7 +26,7 @@ namespace ContabilidadAPI.Controllers
             if (cuentaContable is null)
                 return NotFound($"Cuenta Contable con Id: {id} no encontrada");
 
-            return Ok(cuentaContable);
+            return Ok(await SimplificarModel(cuentaContable));
         }
 
         [HttpGet]
@@ -33,7 +34,10 @@ namespace ContabilidadAPI.Controllers
         {
             where = where ?? new CuentaContable.Where();
             var lista = await Service.CuentaContableManager.Buscar(where);
-            return Ok(lista);
+            var listaSimplificada = await Task.WhenAll(lista
+                .Select(async cuenta => await SimplificarModel(cuenta)));
+
+            return Ok(listaSimplificada);
         }
 
         [HttpPost]
@@ -44,7 +48,8 @@ namespace ContabilidadAPI.Controllers
                 CuentaContable cuentaContable = new(dto);
                 await AsignarReferencias(dto, cuentaContable);
                 await Service.CuentaContableManager.CrearAsync(cuentaContable);
-                return CreatedAtAction(nameof(ObtenerPorId), new { id = cuentaContable.Id }, cuentaContable);
+                var model = await SimplificarModel(cuentaContable);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = cuentaContable.Id }, model);
             }
             catch (ArgumentException ex)
             {
@@ -78,7 +83,7 @@ namespace ContabilidadAPI.Controllers
                 if (!actualizado)
                     return BadRequest($"Cuenta Contable con Id: {id} no pudo ser actualizada.");
 
-                return Ok(cuentaContable);
+                return Ok(await SimplificarModel(cuentaContable));
             }
             catch (ArgumentException ex)
             {
@@ -108,6 +113,32 @@ namespace ContabilidadAPI.Controllers
                 if (cuentaMayor is not null)
                     cuentaContable.CuentaMayorId = cuentaMayor.ObjectId!;
             }
+            else
+            {
+                cuentaContable.CuentaMayorId = null;
+            }
+        }
+
+        private async Task<CuentaContableModel> SimplificarModel(CuentaContable cuenta)
+        {
+            TipoCuenta? tipoCuenta = await Service.TipoCuentaManager.Buscar(cuenta.TipoCuentaId);
+            CuentaContable? cuentaMayor = null;
+            if (!string.IsNullOrEmpty(cuenta.CuentaMayorId))
+                cuentaMayor = await Service.CuentaContableManager.Buscar(cuenta.CuentaMayorId);
+
+            CuentaContableModel model = new CuentaContableModel()
+            {
+                Id = cuenta.Id,
+                CuentaMayorId = cuentaMayor?.Id,
+                Balance = cuenta.Balance,
+                Descripcion = cuenta.Descripcion,
+                Nivel = cuenta.Nivel,
+                PermiteTransacciones = cuenta.PermiteTransacciones,
+                TipoCuentaId = tipoCuenta?.Id ?? 1,
+                Estado = cuenta.Estado
+            };
+
+            return model;
         }
     }
 }

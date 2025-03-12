@@ -208,7 +208,11 @@ const CuentaContable = () => {
       nivel: number;
       balance: number;
     },
-    cuentasContablesList: { objectId: string; nivel: number }[]
+    cuentasContablesList: {
+      id: string;
+      objectId: string;
+      nivel: number;
+    }[]
   ): boolean => {
     if (!cuentaContable.descripcion.trim()) {
       toast({
@@ -219,20 +223,10 @@ const CuentaContable = () => {
       return false;
     }
 
-    if (!cuentaContable.tipoCuentaId.trim()) {
+    if (!cuentaContable.tipoCuentaId) {
       toast({
         title: "Advertencia",
         description: "El Tipo de cuenta es obligatorio.",
-        variant: "warning",
-      });
-      return false;
-    }
-
-    if (cuentaContable.cuentaMayorId && !cuentaContable.cuentaMayorId.trim()) {
-      toast({
-        title: "Advertencia",
-        description:
-          "La Cuenta Mayor debe ser una cuenta válida si se proporciona.",
         variant: "warning",
       });
       return false;
@@ -258,7 +252,7 @@ const CuentaContable = () => {
 
     if (cuentaContable.cuentaMayorId) {
       const cuentaMayor = cuentasContablesList.find(
-        (c) => c.objectId === cuentaContable.cuentaMayorId
+        (c) => c.id == cuentaContable.cuentaMayorId
       );
 
       if (!cuentaMayor) {
@@ -292,6 +286,14 @@ const CuentaContable = () => {
         const newCuentaContable = await createCuentaContable(data);
         setCuentasContables([newCuentaContable, ...cuentasContables]);
       } else {
+        if (data.tipoCuentaId)
+          data.tipoCuentaId = Number.parseInt(data.tipoCuentaId);
+        else data.tipoCuentaId = null;
+
+        if (data.cuentaMayorId)
+          data.cuentaMayorId = Number.parseInt(data.cuentaMayorId);
+        else data.cuentaMayorId = null;
+
         const updatedCuentaContable = await updateCuentaContable(data.id, data);
         setCuentasContables(
           cuentasContables.map((cc) =>
@@ -311,8 +313,8 @@ const CuentaContable = () => {
       key: "tipoCuenta",
       header: "Tipo de Cuenta",
       render: (row) =>
-        tiposCuenta.find((tc) => tc.objectId === row.tipoCuentaId)
-          ?.descripcion || "N/A",
+        tiposCuenta.find((tc) => tc.id === row.tipoCuentaId)?.descripcion ||
+        "N/A",
     },
     {
       key: "permiteTransacciones",
@@ -325,8 +327,8 @@ const CuentaContable = () => {
       key: "cuentaMayor",
       header: "Cuenta Mayor",
       render: (row) =>
-        cuentasContables.find((c) => c.objectId === row.cuentaMayorId)
-          ?.descripcion || "N/A",
+        cuentasContables.find((c) => c.id === row.cuentaMayorId)?.descripcion ||
+        "N/A",
     },
     {
       key: "estado",

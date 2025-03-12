@@ -89,6 +89,13 @@ namespace ContabilidadAPI.Model
         {
             public bool Estado { get; set; }
         }
+
+        [DisplayName("DTO_Listar_CuentaContable")]
+        public class CC_ListarDTO : BaseDTO
+        {
+            public int Id { get; set; }
+            public bool Estado { get; set; }
+        }
         #endregion
     }
 }

@@ -51,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
       <div className="flex h-16 items-center justify-between border-b px-4">
         {!isCollapsed && (
           <span className="text-lg font-semibold tracking-tight animate-fade-in">
-            Accounting
+            Contabilidad
           </span>
         )}
         <Button

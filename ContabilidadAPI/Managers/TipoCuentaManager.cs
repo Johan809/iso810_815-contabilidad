@@ -61,7 +61,7 @@ namespace ContabilidadAPI.Managers
                     filtro &= filtroBuilder.Regex(x => x.Origen, new BsonRegularExpression(where.Descripcion, "i"));
 
                 List<TipoCuenta> resultados = await Context.TipoCuentas.Find(filtro).ToListAsync();
-                return Paginar(resultados, where);
+                return [.. Paginar(resultados, where).OrderBy(tc => tc.Id)];
             }
             catch (Exception ex)
             {
