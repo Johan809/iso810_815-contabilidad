@@ -3,6 +3,10 @@ using ContabilidadAPI.Model;
 using ContabilidadAPI.Service;
 using System.ComponentModel;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using ContabilidadAPI.Lib;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +34,25 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", builder =>
       builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
+builder.Services.AddAuthentication(cfg =>
+{
+    cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(jbo =>
+{
+    jbo.RequireHttpsMetadata = false;
+    jbo.SaveToken = false;
+    jbo.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+            .GetBytes(builder.Configuration["JWT_Secret"]!)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 #endregion
 
 var app = builder.Build();
@@ -42,6 +65,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

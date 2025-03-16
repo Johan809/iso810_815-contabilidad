@@ -10,6 +10,7 @@ namespace ContabilidadAPI.Service
         public SistemaAuxiliarManager SistemaAuxiliarManager { get; }
         public CuentaContableManager CuentaContableManager { get; }
         public EntradaContableManager EntradaContableManager { get; }
+        public UsuarioAuxiliarManager UsuarioAuxiliarManager { get; }
 
         public ContabilidadService(EntityContext context, ILoggerFactory loggerFactory)
         {
@@ -19,6 +20,7 @@ namespace ContabilidadAPI.Service
                 .CreateLogger<SistemaAuxiliarManager>());
             CuentaContableManager = new CuentaContableManager(context, loggerFactory.CreateLogger<CuentaContableManager>());
             EntradaContableManager = new EntradaContableManager(context, loggerFactory.CreateLogger<EntradaContableManager>());
+            UsuarioAuxiliarManager = new UsuarioAuxiliarManager(context, loggerFactory.CreateLogger<UsuarioAuxiliarManager>());
         }
     }
 }

@@ -18,6 +18,7 @@ namespace ContabilidadAPI.Controllers
             Service = service;
         }
 
+        [ApiAuthorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
@@ -29,6 +30,7 @@ namespace ContabilidadAPI.Controllers
         }
 
         [HttpGet]
+        [ApiAuthorize]
         public async Task<IActionResult> ObtenerTodos([FromQuery] EntradaContable.Where where)
         {
             where = where ?? new EntradaContable.Where();
@@ -37,6 +39,7 @@ namespace ContabilidadAPI.Controllers
         }
 
         [HttpPost]
+        [ApiAuthorize]
         public async Task<IActionResult> Crear([FromBody] EntradaContable.EC_Crear_DTO dto)
         {
             try
@@ -89,6 +92,7 @@ namespace ContabilidadAPI.Controllers
             }
         }
 
+        [ApiAuthorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] EntradaContable.EC_Editar_DTO dto)
         {

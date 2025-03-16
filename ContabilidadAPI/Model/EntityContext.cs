@@ -21,6 +21,7 @@ namespace ContabilidadAPI.Model
         public IMongoCollection<SistemaAuxiliar> SistemasAuxiliares => _database.GetCollection<SistemaAuxiliar>(Constantes.ENTIDAD_SISTEMA_AUXILIAR);
         public IMongoCollection<CuentaContable> CuentasContables => _database.GetCollection<CuentaContable>(Constantes.ENTIDAD_CUENTA_CONTABLE);
         public IMongoCollection<EntradaContable> EntradasContables => _database.GetCollection<EntradaContable>(Constantes.ENTIDAD_ENTRADA_CONTABLE);
+        public IMongoCollection<UsuarioAuxiliar> UsuariosAuxiliares => _database.GetCollection<UsuarioAuxiliar>(Constantes.ENTIDAD_USUARIO_AUXILIAR);
     }
 
     #region Clases Auxiliares

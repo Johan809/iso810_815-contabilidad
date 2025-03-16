@@ -14,6 +14,7 @@
         public const string ENTIDAD_SISTEMA_AUXILIAR = "Auxiliares";
         public const string ENTIDAD_CUENTA_CONTABLE = "CuentasContables";
         public const string ENTIDAD_ENTRADA_CONTABLE = "EntradasContables";
+        public const string ENTIDAD_USUARIO_AUXILIAR = "UsuariosAuxiliares";
         #endregion
     }
 }

@@ -19,6 +19,7 @@ namespace ContabilidadAPI.Controllers
             Logger = logger;
         }
 
+        [ApiAuthorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
@@ -30,6 +31,7 @@ namespace ContabilidadAPI.Controllers
         }
 
         [HttpGet]
+        [ApiAuthorize]
         public async Task<IActionResult> ObtenerTodos([FromQuery] CuentaContable.Where where)
         {
             where = where ?? new CuentaContable.Where();
@@ -41,6 +43,7 @@ namespace ContabilidadAPI.Controllers
         }
 
         [HttpPost]
+        [ApiAuthorize]
         public async Task<IActionResult> Crear([FromBody] CuentaContable.CC_CrearDTO dto)
         {
             try
@@ -62,6 +65,7 @@ namespace ContabilidadAPI.Controllers
             }
         }
 
+        [ApiAuthorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] CuentaContable.CC_EditarDTO dto)
         {
