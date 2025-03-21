@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5012/api"; // Adjust if needed
+const API_URL = "/api"; // Adjust if needed
 
 // ✅ Get all Tipos de Moneda
 export const getTiposMoneda = async () => {

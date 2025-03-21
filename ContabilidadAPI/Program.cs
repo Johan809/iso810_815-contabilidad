@@ -6,7 +6,6 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using ContabilidadAPI.Lib;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,14 +57,17 @@ builder.Services.AddAuthentication(cfg =>
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI(); //para que los demas grupos puedan ver las definiciones!
+
+app.UseStaticFiles();
+app.UseRouting();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapFallbackToFile("index.html");
+
 app.Run();

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5012/api/SistemaAuxiliar";
+const API_URL = "/api/SistemaAuxiliar";
 
 export const getSistemasAuxiliares = async () => {
   try {

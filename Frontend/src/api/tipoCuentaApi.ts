@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5012/api/TipoCuenta";
+const API_URL = "/api/TipoCuenta";
 
 export const getTiposCuenta = async () => {
   try {

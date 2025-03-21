@@ -3,5 +3,6 @@
 ################################################################################
 
 /ContabilidadAPI/appsettings.Development.json
+/ContabilidadAPI/wwwroot
 node_modules/
-
+/Frontend/dist

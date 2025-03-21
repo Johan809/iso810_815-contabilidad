@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:5012/api/CuentaContable';
+const API_URL = "/api/CuentaContable";
 
 export const getCuentasContables = async () => {
   try {
     const response = await axios.get(API_URL);
     return response.data;
   } catch (error) {
-    console.error('Error fetching cuentas contables:', error);
+    console.error("Error fetching cuentas contables:", error);
     return [];
   }
 };
@@ -17,7 +17,7 @@ export const createCuentaContable = async (cuentaContable) => {
     const response = await axios.post(API_URL, cuentaContable);
     return response.data;
   } catch (error) {
-    console.error('Error creating cuenta contable:', error);
+    console.error("Error creating cuenta contable:", error);
     throw error;
   }
 };
@@ -27,7 +27,7 @@ export const updateCuentaContable = async (id, cuentaContable) => {
     const response = await axios.put(`${API_URL}/${id}`, cuentaContable);
     return response.data;
   } catch (error) {
-    console.error('Error updating cuenta contable:', error);
+    console.error("Error updating cuenta contable:", error);
     throw error;
   }
 };
@@ -37,7 +37,7 @@ export const deleteCuentaContable = async (id) => {
     await axios.delete(`${API_URL}/${id}`);
     return true;
   } catch (error) {
-    console.error('Error deleting cuenta contable:', error);
+    console.error("Error deleting cuenta contable:", error);
     return false;
   }
 };
