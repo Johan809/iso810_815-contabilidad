@@ -1,6 +1,4 @@
-﻿using BCrypt.Net;
-
-namespace ContabilidadAPI.Lib
+﻿namespace ContabilidadAPI.Lib
 {
     public static class SeguridadHelper
     {

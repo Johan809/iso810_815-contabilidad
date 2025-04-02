@@ -8,6 +8,7 @@
         #endregion
 
         #region Entidades
+        public const string USUARIO = "usuario";
         public const string ENTIDAD_CONTADOR = "Contadores";
         public const string ENTIDAD_TIPO_CUENTA = "TipoCuentas";
         public const string ENTIDAD_TIPO_MONEDA = "TipoMonedas";

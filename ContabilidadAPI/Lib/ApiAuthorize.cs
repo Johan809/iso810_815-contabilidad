@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ContabilidadAPI.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -58,9 +59,13 @@ namespace ContabilidadAPI.Lib
                 }
 
                 // Guardar datos en el contexto para uso en el controlador
-                context.HttpContext.Items["UsuarioId"] = usuarioId;
-                context.HttpContext.Items["Nombre"] = nombre;
-                context.HttpContext.Items["SistemaAuxiliarId"] = sistemaId;
+                UsuarioLogin usuarioLogueado = new UsuarioLogin()
+                {
+                    ObjectId = usuarioId,
+                    Nombre = nombre,
+                    SistemaId = sistemaId
+                };
+                context.HttpContext.Items[Constantes.USUARIO] = usuarioLogueado;
             }
             catch (SecurityTokenExpiredException)
             {

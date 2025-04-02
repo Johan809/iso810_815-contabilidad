@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 #region Logger
 Log.Logger = new LoggerConfiguration()
@@ -54,11 +54,13 @@ builder.Services.AddAuthentication(cfg =>
 });
 #endregion
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
+#region App
 app.UseCors("AllowFrontend");
+//para que los demas grupos puedan ver las definiciones!
 app.UseSwagger();
-app.UseSwaggerUI(); //para que los demas grupos puedan ver las definiciones!
+app.UseSwaggerUI();
 
 app.UseStaticFiles();
 app.UseRouting();
@@ -71,3 +73,4 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+#endregion

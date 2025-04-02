@@ -9,7 +9,7 @@ namespace ContabilidadAPI.Managers
     {
         #region Constructor
         public UsuarioAuxiliarManager(EntityContext context, ILogger<UsuarioAuxiliarManager> logger)
-        : base(context, logger) { }
+            : base(context, logger) { }
         #endregion
 
         #region Metodos

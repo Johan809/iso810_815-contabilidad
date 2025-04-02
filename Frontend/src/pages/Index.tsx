@@ -30,28 +30,32 @@ const Index = () => {
         setModules([
           {
             title: "Cuentas Contables",
-            description: "Manage financial accounts",
+            description:
+              "Administración y gestión de cuentas contables registradas en el sistema.",
             icon: <FileText className="h-4 w-4" />,
             href: "/cuenta-contable",
             count: cuentas.length,
           },
           {
             title: "Tipos de Moneda",
-            description: "Currency types",
+            description:
+              "Listado de monedas registradas con sus tasas de cambio actualizadas.",
             icon: <Wallet className="h-4 w-4" />,
             href: "/tipo-moneda",
             count: tiposMoneda.length,
           },
           {
             title: "Tipos de Cuenta",
-            description: "Account types",
+            description:
+              "Clasificación de cuentas contables según su naturaleza y uso.",
             icon: <Shapes className="h-4 w-4" />,
             href: "/tipo-cuenta",
             count: tiposCuentas.length,
           },
           {
             title: "Sistemas Auxiliares",
-            description: "Manage auxiliary systems",
+            description:
+              "Configuración y gestión de módulos auxiliares conectados al sistema.",
             icon: <Layers className="h-4 w-4" />,
             href: "/sistema-auxiliar",
             count: sistemasAuxiliares.length,

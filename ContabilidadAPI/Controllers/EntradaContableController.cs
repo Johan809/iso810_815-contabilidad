@@ -44,19 +44,12 @@ namespace ContabilidadAPI.Controllers
         {
             try
             {
+                UsuarioLogin usuario = GetUsuarioLogin();
                 if (dto.Detalles is null || dto.Detalles.Count < 2)
                     return BadRequest("Debe haber al menos dos detalles en la entrada contable.");
 
-                //hay que llenar el SistemaAuxiliarId manual
-                //procesar los detalles;
                 EntradaContable entradaContable = new(dto);
-                if (dto.SistemaAuxiliarId != 0)
-                {
-                    var auxiliar = await Service.SistemaAuxiliarManager
-                        .Buscar(dto.SistemaAuxiliarId);
-                    if (auxiliar is not null)
-                        entradaContable.SistemaAuxiliarId = auxiliar.ObjectId!;
-                }
+                entradaContable.SistemaAuxiliarId = usuario.SistemaId;
 
                 var cuentasAfectadas = await Service.CuentaContableManager
                     .Buscar(new CuentaContable.Where()
@@ -98,6 +91,7 @@ namespace ContabilidadAPI.Controllers
         {
             try
             {
+                UsuarioLogin usuario = GetUsuarioLogin();
                 EntradaContable? entradaContable = await Service.EntradaContableManager.Buscar(id);
                 if (entradaContable is null)
                     return NotFound($"Entrada Contable con Id: {id} no encontrada");
@@ -107,13 +101,7 @@ namespace ContabilidadAPI.Controllers
                 entradaContable.Descripcion = dto.Descripcion;
                 entradaContable.FechaAsiento = dto.FechaAsiento;
                 entradaContable.Estado = dto.Estado ?? entradaContable.Estado;
-                if (dto.SistemaAuxiliarId != 0)
-                {
-                    var auxiliar = await Service.SistemaAuxiliarManager
-                        .Buscar(dto.SistemaAuxiliarId);
-                    if (auxiliar is not null)
-                        entradaContable.SistemaAuxiliarId = auxiliar.ObjectId!;
-                }
+                entradaContable.SistemaAuxiliarId = usuario.SistemaId;
 
                 var cuentasAfectadas = await Service.CuentaContableManager
                     .Buscar(new CuentaContable.Where()
@@ -152,6 +140,11 @@ namespace ContabilidadAPI.Controllers
                 Logger.LogError(ex, "Error al actualizar EntradaContable");
                 return StatusCode(500, Constantes.ERROR_SERVIDOR);
             }
+        }
+
+        private UsuarioLogin GetUsuarioLogin()
+        {
+            return (UsuarioLogin)HttpContext.Items[Constantes.USUARIO]!;
         }
     }
 }

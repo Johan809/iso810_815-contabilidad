@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
           <div className="mb-4">
             {!isCollapsed && (
               <h3 className="mb-1 px-2 text-xs font-medium text-muted-foreground animate-fade-in">
-                Main
+                Menú
               </h3>
             )}
             {mainItems.map((item, index) => (
