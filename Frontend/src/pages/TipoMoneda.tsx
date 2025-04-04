@@ -11,6 +11,7 @@ import {
   createTipoMoneda,
   updateTipoMoneda,
   deleteTipoMoneda,
+  updateTasaMoneda,
 } from "@/api/tipoMonedaApi";
 
 const columns = [
@@ -189,7 +190,28 @@ const TipoMoneda = () => {
     return true;
   };
 
+  const handleUpdateTasa = async (moneda) => {
+    try {
+      const updatedMoneda = await updateTasaMoneda(moneda.id);
+      setMonedas(
+        monedas.map((m) => (m.id === updatedMoneda.id ? updatedMoneda : m))
+      );
+      toast({
+        title: "Tasa Moneda Actualizada",
+        description: `La tasa de ${updatedMoneda.descripcion} fue actualizada correctamente.`,
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar la tasa de la moneda.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSubmitMoneda = async (monedaData) => {
+    //HERE
     try {
       if (!validar(monedaData)) return;
 
@@ -237,6 +259,7 @@ const TipoMoneda = () => {
       });
     }
   };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -251,6 +274,11 @@ const TipoMoneda = () => {
         data={monedas}
         onEdit={handleEditMoneda}
         onDelete={(moneda) => handleDeleteMoneda(moneda.id)}
+        onUpdate={{
+          icon: "coin",
+          label: "Actualizar Tasa",
+          func: (item) => handleUpdateTasa(item),
+        }}
       />
 
       {/* Modal for Adding/Editing Moneda */}

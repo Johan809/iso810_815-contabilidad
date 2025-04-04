@@ -105,7 +105,7 @@ namespace ContabilidadAPI.Controllers
 
                 using (HttpClient client = new HttpClient())
                 {
-                    string url = $"https://ws-publico-657430150775.us-central1.run.app/api/exchange-rate?currencyCode={tipoMoneda.CodigoISO}";
+                    string url = $"https://ws-public-ms.ambitioustree-0fda82fa.westus2.azurecontainerapps.io/api/exchange-rate?currencyCode={tipoMoneda.CodigoISO}";
                     HttpResponseMessage response = await client.GetAsync(url);
 
                     if (!response.IsSuccessStatusCode)

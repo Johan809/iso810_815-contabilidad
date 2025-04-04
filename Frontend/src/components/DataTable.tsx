@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import {
+  Pencil,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  HandCoins,
+} from "lucide-react";
 
 interface Column {
   key: string;
@@ -23,6 +29,11 @@ interface DataTableProps {
   data: any[];
   onEdit: (item: any) => void;
   onDelete: (item: any) => void;
+  onUpdate?: {
+    icon: string;
+    label: string;
+    func: (item: object) => void;
+  };
 }
 
 const DataTable: React.FC<DataTableProps> = ({
@@ -30,6 +41,7 @@ const DataTable: React.FC<DataTableProps> = ({
   data,
   onEdit,
   onDelete,
+  onUpdate = null,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -108,6 +120,21 @@ const DataTable: React.FC<DataTableProps> = ({
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
                       </Button>
+                      {onUpdate && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onUpdate.func(item)}
+                          className="h-8 w-8 transition-all duration-200 hover:text-primary"
+                          title={onUpdate.label}
+                        >
+                          {/* poner segun los iconos que se usen */}
+                          {onUpdate.icon === "coin" && (
+                            <HandCoins className="h-4 w-4" />
+                          )}
+                          <span className="sr-only">{onUpdate.label}</span>
+                        </Button>
+                      )}
                       {/* Delete button here */}
                     </div>
                   </TableCell>
