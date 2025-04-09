@@ -10,9 +10,9 @@ namespace ContabilidadAPI.Lib
     {
         private readonly IConfiguration _configuration;
 
-        public AuthHelper()
+        public AuthHelper(IConfiguration configuration)
         {
-            _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _configuration = configuration;
         }
 
         public string GenerateJWTToken(UsuarioAuxiliar user)

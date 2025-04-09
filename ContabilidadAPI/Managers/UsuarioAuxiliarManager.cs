@@ -173,7 +173,7 @@ namespace ContabilidadAPI.Managers
                     return (null, false);
 
                 usuario._SistemaId = Context.SistemasAuxiliares
-                    .FindSync(sa => sa.ObjectId == usuario.ObjectId)
+                    .FindSync(sa => sa.ObjectId == usuario.SistemaAuxiliarId)
                     .FirstOrDefault()?.Id;
 
                 bool accesoValido = SeguridadHelper.CompararContrasena(password, usuario.ContrasenaHash);

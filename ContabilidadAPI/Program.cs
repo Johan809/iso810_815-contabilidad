@@ -1,10 +1,11 @@
-using Serilog;
+using ContabilidadAPI.Lib;
 using ContabilidadAPI.Model;
 using ContabilidadAPI.Service;
-using System.ComponentModel;
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using System.ComponentModel;
+using System.Reflection;
 using System.Text;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,7 @@ builder.Logging.AddSerilog();
 #endregion
 
 #region Services
+builder.Services.AddSingleton<AuthHelper>();
 builder.Services.AddSingleton<EntityContext>();
 builder.Services.AddSingleton<ContabilidadService>();
 builder.Services.AddControllers();
