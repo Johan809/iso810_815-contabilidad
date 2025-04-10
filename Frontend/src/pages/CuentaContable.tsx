@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import DataTable from "@/components/DataTable";
+import DataTable, { Filter } from "@/components/DataTable";
 import Modal from "@/components/Modal";
 import {
   getCuentasContables,
@@ -337,6 +337,49 @@ const CuentaContable = () => {
     },
   ];
 
+  const filters: Filter[] = [
+    {
+      key: "tipoCuentaId",
+      label: "Tipo de Cuenta",
+      type: "select",
+      options: tiposCuenta.map((tc) => ({
+        label: tc.descripcion,
+        value: tc.id,
+      })),
+    },
+    {
+      key: "nivel",
+      label: "Nivel",
+      type: "select",
+      options: [
+        { label: "Nivel 1", value: 1 },
+        { label: "Nivel 2", value: 2 },
+        { label: "Nivel 3", value: 3 },
+      ],
+    },
+    {
+      key: "permiteTransacciones",
+      label: "Permite Transacciones",
+      type: "boolean",
+    },
+    {
+      key: "estado",
+      label: "Estado",
+      type: "boolean",
+    },
+    {
+      key: "cuentaMayorId",
+      label: "Cuenta Mayor",
+      type: "select",
+      options: cuentasContables
+        .filter((cc) => cc.nivel < 3) // Solo mostrar cuentas que pueden ser mayores
+        .map((cc) => ({
+          label: cc.descripcion,
+          value: cc.id,
+        })),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -346,6 +389,7 @@ const CuentaContable = () => {
       <DataTable
         columns={columns}
         data={cuentasContables}
+        filters={filters}
         onEdit={handleEdit}
         onDelete={(cc) => handleDelete(cc.id)}
       />

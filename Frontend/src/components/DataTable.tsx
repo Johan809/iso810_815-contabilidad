@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -16,12 +17,34 @@ import {
   ChevronRight,
   Search,
   HandCoins,
+  FilterX,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+
+interface FilterOption {
+  label: string;
+  value: string | number | boolean;
+}
+
+export interface Filter {
+  key: string;
+  label: string;
+  type: "select" | "boolean" | "number" | "text";
+  options?: FilterOption[];
+}
 
 interface Column {
   key: string;
   header: string;
   render?: (row: any) => React.ReactNode;
+  filterable?: boolean;
 }
 
 interface DataTableProps {
@@ -29,6 +52,7 @@ interface DataTableProps {
   data: any[];
   onEdit: (item: any) => void;
   onDelete: (item: any) => void;
+  filters?: Filter[];
   onUpdate?: {
     icon: string;
     label: string;
@@ -41,21 +65,55 @@ const DataTable: React.FC<DataTableProps> = ({
   data,
   onEdit,
   onDelete,
+  filters = [],
   onUpdate = null,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
+  const [showFilters, setShowFilters] = useState(false);
   const itemsPerPage = 8;
 
-  // Filter data based on search term
-  const filteredData = data.filter((item) =>
-    Object.values(item).some(
-      (value) =>
-        value !== null &&
-        value !== undefined &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilters, searchTerm]);
+
+  // Apply filters to data
+  const filteredData = data.filter((item) => {
+    // First apply search term across all fields
+    const matchesSearch =
+      searchTerm === "" ||
+      Object.values(item).some(
+        (value) =>
+          value !== null &&
+          value !== undefined &&
+          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+    // Then apply specific filters
+    const matchesFilters = Object.entries(activeFilters).every(
+      ([key, value]) => {
+        //ignoring null values
+        if (
+          value === "" ||
+          value === undefined ||
+          value === null ||
+          value === "-1"
+        )
+          return true;
+
+        // Handle boolean filters
+        if (typeof value === "boolean") {
+          return item[key] === value;
+        }
+
+        // Handle select filters
+        return item[key] == value; // Use loose equality to handle string/number comparison
+      }
+    );
+
+    return matchesSearch && matchesFilters;
+  });
 
   // Pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -64,6 +122,17 @@ const DataTable: React.FC<DataTableProps> = ({
     startIndex,
     startIndex + itemsPerPage
   );
+
+  const handleFilterChange = (key: string, value: any) => {
+    setActiveFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const clearFilters = () => {
+    setActiveFilters({});
+  };
 
   return (
     <div className="w-full space-y-4 animate-fade-in">
@@ -82,7 +151,115 @@ const DataTable: React.FC<DataTableProps> = ({
             />
           </div>
         </div>
+
+        {filters.length > 0 && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              {showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+            </Button>
+
+            {Object.keys(activeFilters).length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="flex items-center gap-1"
+              >
+                <FilterX className="h-4 w-4" />
+                Limpiar filtros
+              </Button>
+            )}
+          </div>
+        )}
       </div>
+
+      {showFilters && filters.length > 0 && (
+        <Card className="bg-muted/20">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filters.map((filter) => (
+                <div key={filter.key} className="space-y-1">
+                  <label className="text-sm font-medium">{filter.label}</label>
+
+                  {filter.type === "select" && filter.options && (
+                    <Select
+                      value={activeFilters[filter.key]?.toString() || ""}
+                      onValueChange={(value) =>
+                        handleFilterChange(filter.key, value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={null}>Todos</SelectItem>
+                        {filter.options.map((option) => (
+                          <SelectItem
+                            key={option.value.toString()}
+                            value={option.value.toString()}
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {filter.type === "boolean" && (
+                    <Select
+                      value={activeFilters[filter.key]?.toString() || ""}
+                      onValueChange={(value) => {
+                        if (value === "") {
+                          handleFilterChange(filter.key, "");
+                        } else {
+                          handleFilterChange(filter.key, value === "true");
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={null}>Todos</SelectItem>
+                        <SelectItem value="true">Sí</SelectItem>
+                        <SelectItem value="false">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {filter.type === "text" && (
+                    <Input
+                      value={activeFilters[filter.key] || ""}
+                      onChange={(e) =>
+                        handleFilterChange(filter.key, e.target.value)
+                      }
+                      placeholder={`Filtrar por ${filter.label.toLowerCase()}`}
+                    />
+                  )}
+
+                  {filter.type === "number" && (
+                    <Input
+                      type="number"
+                      value={activeFilters[filter.key] || ""}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          filter.key,
+                          e.target.value ? Number(e.target.value) : ""
+                        )
+                      }
+                      placeholder={`Filtrar por ${filter.label.toLowerCase()}`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="rounded-lg border bg-card/60 backdrop-blur">
         <Table>
@@ -128,7 +305,6 @@ const DataTable: React.FC<DataTableProps> = ({
                           className="h-8 w-8 transition-all duration-200 hover:text-primary"
                           title={onUpdate.label}
                         >
-                          {/* poner segun los iconos que se usen */}
                           {onUpdate.icon === "coin" && (
                             <HandCoins className="h-4 w-4" />
                           )}
@@ -146,7 +322,7 @@ const DataTable: React.FC<DataTableProps> = ({
                   colSpan={columns.length + 1}
                   className="h-24 text-center"
                 >
-                  No results found.
+                  No se encontraron resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -157,9 +333,9 @@ const DataTable: React.FC<DataTableProps> = ({
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to{" "}
-            {Math.min(startIndex + itemsPerPage, filteredData.length)} of{" "}
-            {filteredData.length} entries
+            Mostrando {startIndex + 1} a{" "}
+            {Math.min(startIndex + itemsPerPage, filteredData.length)} de{" "}
+            {filteredData.length} registros
           </span>
           <div className="flex items-center space-x-2">
             <Button
@@ -173,7 +349,7 @@ const DataTable: React.FC<DataTableProps> = ({
               <span className="sr-only">Previous page</span>
             </Button>
             <span className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
+              Página {currentPage} de {totalPages}
             </span>
             <Button
               variant="outline"

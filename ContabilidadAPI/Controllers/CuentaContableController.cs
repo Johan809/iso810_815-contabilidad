@@ -37,7 +37,8 @@ namespace ContabilidadAPI.Controllers
             where = where ?? new CuentaContable.Where();
             var lista = await Service.CuentaContableManager.Buscar(where);
             var listaSimplificada = await Task.WhenAll(lista
-                .Select(async cuenta => await SimplificarModel(cuenta)));
+                .Select(async cuenta => await SimplificarModel(cuenta))
+            );
 
             return Ok(listaSimplificada);
         }
