@@ -15,6 +15,8 @@ import TipoMoneda from "./pages/TipoMoneda";
 import TipoCuenta from "./pages/TipoCuenta";
 import SistemaAuxiliar from "./pages/SistemaAuxiliar";
 import CuentaContable from "./pages/CuentaContable";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Authentication routes (outside of main layout) */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          {/* Application routes (inside layout with sidebar) */}
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/users" element={<Users />} />
@@ -36,6 +43,8 @@ const App = () => (
             <Route path="/tipo-cuenta" element={<TipoCuenta />} />
             <Route path="/sistema-auxiliar" element={<SistemaAuxiliar />} />
             <Route path="/cuenta-contable" element={<CuentaContable />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
