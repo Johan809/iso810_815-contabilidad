@@ -16,6 +16,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuthentication } from "@/hooks/use-authentication";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -41,6 +42,8 @@ const otherItems: SidebarItem[] = [
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
+  const { usuario } = useAuthentication();
+
   return (
     <aside
       className={cn(
@@ -134,13 +137,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
           <div className="flex items-center gap-3">
             <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full">
               <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm font-medium">
-                JD
+                {usuario?.nombre
+                  ? usuario.nombre
+                      .split(" ")
+                      .map((str) => str.substring(0, 1))
+                      .join("")
+                  : "JD"}
               </span>
             </span>
             <div className="grid gap-0.5 text-sm">
-              <span className="font-medium">John Doe</span>
+              <span className="font-medium">
+                {usuario?.nombre ?? "John Doe"}
+              </span>
               <span className="text-xs text-muted-foreground">
-                admin@acme.com
+                {usuario?.email ?? "admin@acme.com"}
               </span>
             </div>
           </div>

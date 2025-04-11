@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:deploy": "npm run build && npm run copy-to-api",
-    "copy-to-api": "if exist ..\\ContabilidadAPI\\wwwroot rmdir /s /q ..\\ContabilidadAPI\\wwwroot && mkdir ..\\ContabilidadAPI\\wwwroot && xcopy dist\\* ..\\ContabilidadAPI\\wwwroot\\ /E /I /Y"
+    "copy-to-api": "if exist ..\\ContabilidadAPI\\wwwroot rmdir /s /q ..\\ContabilidadAPI\\wwwroot && mkdir ..\\ContabilidadAPI\\wwwroot && xcopy dist\\* ..\\ContabilidadAPI\\wwwroot\\ /E /I /Y",
+    "watch:deploy": "chokidar \"src/**/*\" --initial --ignoreInitial false -c \"npm run build:deploy\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -72,6 +73,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
+    "chokidar-cli": "^3.0.0",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",

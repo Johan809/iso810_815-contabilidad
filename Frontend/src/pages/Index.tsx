@@ -1,6 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { ArrowRight, FileText, Layers, Shapes, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Layers, ArrowRight, Wallet, FileText, Shapes } from "lucide-react";
+
+import {
+  getCuentasContables,
+  getSistemasAuxiliares,
+  getTiposCuentas,
+  getTiposMoneda,
+} from "@/api/dashboardApi";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,16 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  getCuentasContables,
-  getTiposMoneda,
-  getTiposCuentas,
-  getSistemasAuxiliares,
-} from "@/api/dashboardApi";
+import { useAuthentication } from "@/hooks/use-authentication";
 
 const Index = () => {
   const [modules, setModules] = useState([]);
+  const { login } = useAuthentication();
 
   useEffect(() => {
     async function fetchData() {
@@ -47,7 +50,7 @@ const Index = () => {
           {
             title: "Tipos de Cuenta",
             description:
-              "Clasificación de cuentas contables según su naturaleza y uso.",
+              "Permiten clasificar las cuentas contables según su naturaleza y uso.",
             icon: <Shapes className="h-4 w-4" />,
             href: "/tipo-cuenta",
             count: tiposCuentas.length,

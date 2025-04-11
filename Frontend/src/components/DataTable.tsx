@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import React, { useState, useEffect } from "react";
 import {
   Table,
@@ -213,7 +212,7 @@ const DataTable: React.FC<DataTableProps> = ({
                     <Select
                       value={activeFilters[filter.key]?.toString() || ""}
                       onValueChange={(value) => {
-                        if (value === "") {
+                        if (value === "-1") {
                           handleFilterChange(filter.key, "");
                         } else {
                           handleFilterChange(filter.key, value === "true");
@@ -224,9 +223,17 @@ const DataTable: React.FC<DataTableProps> = ({
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={null}>Todos</SelectItem>
-                        <SelectItem value="true">Sí</SelectItem>
-                        <SelectItem value="false">No</SelectItem>
+                        <SelectItem value="-1">Todos</SelectItem>
+                        <SelectItem value="true">
+                          {filter.options && filter.options[0]
+                            ? filter.options[0].label
+                            : "Sí"}
+                        </SelectItem>
+                        <SelectItem value="false">
+                          {filter.options && filter.options[1]
+                            ? filter.options[1].label
+                            : "No"}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -293,6 +300,7 @@ const DataTable: React.FC<DataTableProps> = ({
                         size="icon"
                         onClick={() => onEdit(item)}
                         className="h-8 w-8 transition-all duration-200 hover:text-primary"
+                        title="Editar"
                       >
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>

@@ -366,6 +366,10 @@ const CuentaContable = () => {
       key: "estado",
       label: "Estado",
       type: "boolean",
+      options: [
+        { label: "Activo", value: true },
+        { label: "Inactivo", value: false },
+      ],
     },
     {
       key: "cuentaMayorId",

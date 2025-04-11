@@ -2,12 +2,15 @@ import React from "react";
 import { Bell, Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuthentication } from "@/hooks/use-authentication";
 
 interface HeaderProps {
   toggleSidebar: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
+  const { usuario } = useAuthentication();
+
   return (
     <header className="w-full border-b border-border bg-card/80 backdrop-blur sticky top-0 z-30 h-16 flex items-center px-4 md:px-6">
       <div className="flex items-center gap-2 md:hidden">
@@ -45,7 +48,14 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
           className="rounded-full h-9 w-9 ml-2"
         >
           <span className="relative flex h-full w-full items-center justify-center rounded-full bg-muted overflow-hidden">
-            <span className="font-medium text-sm">JD</span>
+            <span className="font-medium text-sm">
+              {usuario?.nombre
+                ? usuario.nombre
+                    .split(" ")
+                    .map((str) => str.substring(0, 1))
+                    .join("")
+                : "JD"}
+            </span>
           </span>
         </Button>
       </div>
