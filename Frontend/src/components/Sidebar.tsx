@@ -14,6 +14,7 @@ import {
   Layers,
   Shapes,
   Wallet,
+  FileInput
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthentication } from "@/hooks/use-authentication";
@@ -31,6 +32,7 @@ interface SidebarItem {
 
 const mainItems: SidebarItem[] = [
   { icon: Home, label: "Dashboard", href: "/" },
+  { icon: FileInput, label: "Entrada Contable", href: "/entrada-contable" },
   { icon: FileText, label: "Cuenta contable", href: "/cuenta-contable" },
   { icon: Layers, label: "Sistema Auxiliar", href: "/sistema-auxiliar" },
   { icon: Shapes, label: "Tipo de cuenta", href: "/tipo-cuenta" },

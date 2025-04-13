@@ -95,6 +95,7 @@ namespace ContabilidadAPI.Model
         {
             public int Id { get; set; }
             public bool Estado { get; set; }
+            public string? ObjectId { get; set; }
         }
         #endregion
     }

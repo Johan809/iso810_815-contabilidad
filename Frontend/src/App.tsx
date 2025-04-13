@@ -17,6 +17,7 @@ import SistemaAuxiliar from "./pages/SistemaAuxiliar";
 import CuentaContable from "./pages/CuentaContable";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import EntradaContable from "./pages/EntradaContable";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/cuenta-contable" element={<CuentaContable />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/entrada-contable" element={<EntradaContable />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

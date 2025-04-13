@@ -134,6 +134,7 @@ namespace ContabilidadAPI.Controllers
             CuentaContableModel model = new CuentaContableModel()
             {
                 Id = cuenta.Id,
+                ObjectId = cuenta.ObjectId,
                 CuentaMayorId = cuentaMayor?.Id,
                 Balance = cuenta.Balance,
                 Descripcion = cuenta.Descripcion,

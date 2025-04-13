@@ -49,8 +49,8 @@ interface Column {
 interface DataTableProps {
   columns: Column[];
   data: any[];
-  onEdit: (item: any) => void;
-  onDelete: (item: any) => void;
+  onEdit?: (item: any) => void;
+  onDelete?: (item: any) => void;
   filters?: Filter[];
   onUpdate?: {
     icon: string;
@@ -72,6 +72,7 @@ const DataTable: React.FC<DataTableProps> = ({
   const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
   const [showFilters, setShowFilters] = useState(false);
   const itemsPerPage = 8;
+  const showActionsColumn = !!onEdit || !!onUpdate || !!onDelete;
 
   useEffect(() => {
     setCurrentPage(1);
@@ -277,7 +278,10 @@ const DataTable: React.FC<DataTableProps> = ({
                   {column.header}
                 </TableHead>
               ))}
-              <TableHead className="w-[100px] text-right">Acciones</TableHead>
+              {showActionsColumn && (
+                <TableHead className="w-[100px] text-right">Acciones</TableHead>
+              )}
+
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -293,35 +297,35 @@ const DataTable: React.FC<DataTableProps> = ({
                       {column.render ? column.render(item) : item[column.key]}
                     </TableCell>
                   ))}
+                  {showActionsColumn && (
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onEdit(item)}
-                        className="h-8 w-8 transition-all duration-200 hover:text-primary"
-                        title="Editar"
-                      >
-                        <Pencil className="h-4 w-4" />
-                        <span className="sr-only">Edit</span>
-                      </Button>
+                      {onEdit && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onEdit(item)}
+                          className="h-8 w-8 hover:text-primary"
+                          title="Editar"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
                       {onUpdate && (
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => onUpdate.func(item)}
-                          className="h-8 w-8 transition-all duration-200 hover:text-primary"
+                          className="h-8 w-8 hover:text-primary"
                           title={onUpdate.label}
                         >
-                          {onUpdate.icon === "coin" && (
-                            <HandCoins className="h-4 w-4" />
-                          )}
-                          <span className="sr-only">{onUpdate.label}</span>
+                          {onUpdate.icon === "coin" && <HandCoins className="h-4 w-4" />}
                         </Button>
                       )}
-                      {/* Delete button here */}
+                      {/* puedes agregar onDelete aquí si lo implementas */}
                     </div>
                   </TableCell>
+                )}
                 </TableRow>
               ))
             ) : (
