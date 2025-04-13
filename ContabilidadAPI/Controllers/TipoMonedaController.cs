@@ -53,7 +53,7 @@ namespace ContabilidadAPI.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { mensaje = ex.Message });
             }
             catch (Exception ex)
             {
@@ -80,12 +80,11 @@ namespace ContabilidadAPI.Controllers
                 if (!actualizado)
                     return BadRequest($"Tipo Moneda con Id: {id} no pudo ser actualizado.");
 
-                // ✅ FIX: Return the updated object instead of `true`
                 return Ok(tipoMoneda);
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { mensaje = ex.Message });
             }
             catch (Exception ex)
             {
@@ -125,6 +124,10 @@ namespace ContabilidadAPI.Controllers
 
                     return Ok(tipoMoneda);
                 }
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
             }
             catch (Exception ex)
             {

@@ -57,6 +57,13 @@ namespace ContabilidadAPI.Controllers
                     }
                 });
             }
+            catch (ArgumentException ae)
+            {
+                return BadRequest(new
+                {
+                    mensaje = ae.Message
+                });
+            }
             catch (Exception ex)
             {
                 Logger.LogError($"Error en el registro: {ex.Message}");

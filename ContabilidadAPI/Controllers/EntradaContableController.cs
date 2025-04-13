@@ -76,7 +76,7 @@ namespace ContabilidadAPI.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { mensaje = ex.Message });
             }
             catch (Exception ex)
             {
@@ -133,7 +133,7 @@ namespace ContabilidadAPI.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { mensaje = ex.Message });
             }
             catch (Exception ex)
             {

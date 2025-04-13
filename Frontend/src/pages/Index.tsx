@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
 import { ArrowRight, FileText, Layers, Shapes, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import {
-  getCuentasContables,
-  getSistemasAuxiliares,
-  getTiposCuentas,
-  getTiposMoneda,
-} from "@/api/dashboardApi";
+import { getConteoDashboard } from "@/api/dashboardApi";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,10 +20,7 @@ const Index = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const cuentas = await getCuentasContables();
-        const tiposMoneda = await getTiposMoneda();
-        const tiposCuentas = await getTiposCuentas();
-        const sistemasAuxiliares = await getSistemasAuxiliares();
+        const conteo = await getConteoDashboard();
 
         setModules([
           {
@@ -37,7 +29,7 @@ const Index = () => {
               "Administración y gestión de cuentas contables registradas en el sistema.",
             icon: <FileText className="h-4 w-4" />,
             href: "/cuenta-contable",
-            count: cuentas.length,
+            count: conteo.totalCuentasContables,
           },
           {
             title: "Tipos de Moneda",
@@ -45,7 +37,7 @@ const Index = () => {
               "Listado de monedas registradas con sus tasas de cambio actualizadas.",
             icon: <Wallet className="h-4 w-4" />,
             href: "/tipo-moneda",
-            count: tiposMoneda.length,
+            count: conteo.totalTipoMonedas,
           },
           {
             title: "Tipos de Cuenta",
@@ -53,7 +45,7 @@ const Index = () => {
               "Permiten clasificar las cuentas contables según su naturaleza y uso.",
             icon: <Shapes className="h-4 w-4" />,
             href: "/tipo-cuenta",
-            count: tiposCuentas.length,
+            count: conteo.totalTipoCuentas,
           },
           {
             title: "Sistemas Auxiliares",
@@ -61,7 +53,7 @@ const Index = () => {
               "Configuración y gestión de módulos auxiliares conectados al sistema.",
             icon: <Layers className="h-4 w-4" />,
             href: "/sistema-auxiliar",
-            count: sistemasAuxiliares.length,
+            count: conteo.totalSistemasAuxiliares,
           },
         ]);
       } catch (error) {

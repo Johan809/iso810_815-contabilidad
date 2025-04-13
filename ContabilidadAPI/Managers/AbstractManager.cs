@@ -1,4 +1,5 @@
-﻿using ContabilidadAPI.Model;
+﻿using ContabilidadAPI.Lib;
+using ContabilidadAPI.Model;
 using MongoDB.Driver;
 
 namespace ContabilidadAPI.Managers
@@ -43,6 +44,30 @@ namespace ContabilidadAPI.Managers
                     .Take(where.CantidadPagina).ToList();
             }
             else return lista;
+        }
+
+        public async Task<ResumenSistemaDTO> ObtenerResumenSistemaAsync()
+        {
+            try
+            {
+                var cuentasContables = await Context.CuentasContables.CountDocumentsAsync(_ => true); 
+                var tipoMonedas = await Context.TipoMonedas.CountDocumentsAsync(_ => true); 
+                var tipoCuentas = await Context.TipoCuentas.CountDocumentsAsync(_ => true); 
+                var sistemasAuxiliares = await Context.SistemasAuxiliares.CountDocumentsAsync(_ => true);
+
+                return new ResumenSistemaDTO
+                {
+                    TotalCuentasContables = cuentasContables,
+                    TotalTipoMonedas = tipoMonedas,
+                    TotalTipoCuentas = tipoCuentas,
+                    TotalSistemasAuxiliares = sistemasAuxiliares
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Error al obtener resumen del sistema: {0}", ex);
+                throw new Exception(Constantes.ERROR_SERVIDOR);
+            }
         }
         #endregion
     }
