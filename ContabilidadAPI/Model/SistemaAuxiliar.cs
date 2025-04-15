@@ -7,6 +7,8 @@ namespace ContabilidadAPI.Model
     public class SistemaAuxiliar
     {
         #region Constructor
+        public const string CONTABILIDAD = "67d0a0467da3a3f043d79521";
+
         public SistemaAuxiliar() { }
 
         public SistemaAuxiliar(BaseDTO dto)

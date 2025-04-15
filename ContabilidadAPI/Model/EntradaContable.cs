@@ -102,6 +102,18 @@ namespace ContabilidadAPI.Model
         {
             public string? Estado { get; set; }
         }
+
+        [DisplayName("DTO_Resultado_EntradaContable")]
+        public class EntradaContableDTO
+        {
+            public int Id { get; set; }
+            public string Descripcion { get; set; } = string.Empty;
+            public int SistemaAuxiliarId { get; set; }
+            public DateTime FechaAsiento { get; set; }
+            public string Estado { get; set; } = string.Empty;
+            public string EstadoDesc { get; set; } = string.Empty;
+            public List<EntradaContableDetalle.DetalleDTO> Detalles { get; set; } = new();
+        }
         #endregion
     }
 
@@ -141,6 +153,9 @@ namespace ContabilidadAPI.Model
                 };
             }
         }
+
+        [BsonIgnore]
+        public int? CuentaIdentificador { get; set; }
         #endregion
 
         #region DTO

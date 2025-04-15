@@ -2,6 +2,7 @@
 using ContabilidadAPI.Model;
 using ContabilidadAPI.Service;
 using Microsoft.AspNetCore.Mvc;
+using static ContabilidadAPI.Model.EntradaContable;
 
 namespace ContabilidadAPI.Controllers
 {
@@ -25,16 +26,28 @@ namespace ContabilidadAPI.Controllers
             var entradaContable = await Service.EntradaContableManager.Buscar(id);
             if (entradaContable is null)
                 return NotFound($"Entrada Contable con Id: {id} no encontrada");
-
-            return Ok(entradaContable);
+            var dto = await ConvertirADTOAsync(entradaContable);
+            return Ok(dto);
         }
 
         [HttpGet]
         [ApiAuthorize]
         public async Task<IActionResult> ObtenerTodos([FromQuery] EntradaContable.Where where)
         {
-            where = where ?? new EntradaContable.Where();
+            where ??= new EntradaContable.Where();
+            UsuarioLogin usuario = GetUsuarioLogin();
+            if (usuario.SistemaId != SistemaAuxiliar.CONTABILIDAD)
+            {
+                where.SistemaAuxiliarId = usuario.SistemaId;
+            }
             var lista = await Service.EntradaContableManager.Buscar(where);
+            var listaDTO = new List<object>();
+            foreach (var entrada in lista)
+            {
+                var dto = await ConvertirADTOAsync(entrada);
+                listaDTO.Add(dto);
+            }
+
             return Ok(lista);
         }
 
@@ -140,6 +153,38 @@ namespace ContabilidadAPI.Controllers
                 Logger.LogError(ex, "Error al actualizar EntradaContable");
                 return StatusCode(500, Constantes.ERROR_SERVIDOR);
             }
+        }
+
+        private async Task<EntradaContableDTO> ConvertirADTOAsync(EntradaContable entrada)
+        {
+            var dto = new EntradaContableDTO
+            {
+                Id = entrada.Id,
+                Descripcion = entrada.Descripcion,
+                FechaAsiento = entrada.FechaAsiento,
+                Estado = entrada.Estado,
+                EstadoDesc = entrada.EstadoDesc,
+                Detalles = new List<EntradaContableDetalle.DetalleDTO>()
+            };
+
+            var sistema = await Service.SistemaAuxiliarManager.Buscar(entrada.SistemaAuxiliarId);
+            dto.SistemaAuxiliarId = sistema?.Id ?? 0;
+
+            var cuentasIds = entrada.Detalles.Select(d => d.CuentaId).Distinct().ToList();
+            var cuentas = await Service.CuentaContableManager.Buscar(cuentasIds);
+
+            foreach (var detalle in entrada.Detalles)
+            {
+                var cuenta = cuentas.FirstOrDefault(c => c.ObjectId == detalle.CuentaId);
+                dto.Detalles.Add(new EntradaContableDetalle.DetalleDTO
+                {
+                    CuentaId = cuenta?.Id ?? 0,
+                    TipoMovimiento = detalle.TipoMovimiento,
+                    MontoAsiento = detalle.MontoAsiento
+                });
+            }
+
+            return dto;
         }
 
         private UsuarioLogin GetUsuarioLogin()
