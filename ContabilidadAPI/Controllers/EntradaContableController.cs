@@ -48,7 +48,7 @@ namespace ContabilidadAPI.Controllers
                 listaDTO.Add(dto);
             }
 
-            return Ok(lista);
+            return Ok(listaDTO);
         }
 
         [HttpPost]
