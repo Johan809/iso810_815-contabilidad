@@ -41,8 +41,6 @@ const EntradaContable = () => {
           variant: "destructive",
         })
       ); 
-      
-      console.log("Sistemas Auxiliares:", sistemasAuxiliares);
   }, []);
 
   const openModal = async (id: number) => {
@@ -75,7 +73,7 @@ const EntradaContable = () => {
         header: "Sistema Auxiliar",
         render: (row) => {
           const sistema = sistemasAuxiliares.find(
-            (sa) => sa.objectId === row.sistemaAuxiliarId
+            (sa) => sa.id === row.sistemaAuxiliarId
           );
           return sistema ? sistema.descripcion : "N/A";
         }
@@ -118,7 +116,7 @@ const EntradaContable = () => {
       type: "select",
       options: sistemasAuxiliares.map((sistema) => ({
         label: sistema.descripcion,
-        value: sistema.objectId,
+        value: sistema.id,
       })),
     },
 
@@ -128,7 +126,7 @@ const EntradaContable = () => {
       type: "select",
       options: cuentasContables.map(cuenta => ({
         label: cuenta.descripcion,
-        value: cuenta.objectId
+        value: cuenta.id
       })),
       // This indicates it's a special filter for nested arrays
       customFilter: true
@@ -137,9 +135,9 @@ const EntradaContable = () => {
 
   const customFilterFunction = (item, filters) => {
     // Handle the cuentaId filter specially
-    const cuentaIdFilter = filters.cuentaId;
+    const cuentaIdFilter = Number(filters.cuentaId);
     
-    if (cuentaIdFilter && cuentaIdFilter !== "") {
+    if (cuentaIdFilter) {
       // Check if any detail in the array has this cuentaId
       const hasMatchingCuenta = item.detalles?.some(
         detail => detail.cuentaId === cuentaIdFilter
@@ -181,7 +179,7 @@ const EntradaContable = () => {
             <p>
               <strong>Sistema Auxiliar:</strong>{" "}
                 {sistemasAuxiliares.find(
-                    (sa) => sa.objectId === selectedEntrada.sistemaAuxiliarId
+                    (sa) => sa.id === selectedEntrada.sistemaAuxiliarId
                 )?.descripcion || "N/A"}
             </p>
             <p>
@@ -204,7 +202,7 @@ const EntradaContable = () => {
                 </thead>
                 <tbody>
                     {selectedEntrada.detalles?.map((d, i) => {
-                    const cuenta = cuentasContables.find((c) => c.objectId === d.cuentaId);
+                    const cuenta = cuentasContables.find((c) => c.id === d.cuentaId);
                     return (
                         <tr key={i} className="hover:bg-gray-50">
                         <td className="px-4 py-2 border-b">
