@@ -64,7 +64,11 @@ const EntradaContable = () => {
     {
       key: "fechaAsiento",
       header: "Fecha",
-      render: (row) => new Date(row.fechaAsiento).toLocaleDateString(),
+      render: (row) => new Date(row.fechaAsiento).toLocaleDateString("es-DO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
     },
     {
         key: "sistemaAuxiliarId",
@@ -104,6 +108,11 @@ const EntradaContable = () => {
       ],
     },
     {
+      key: "fechaAsiento",
+      label: "Fecha de asiento",
+      type: "date"
+    },
+    {
       key: "sistemaAuxiliarId",
       label: "Sistema Auxiliar",
       type: "select",
@@ -112,7 +121,38 @@ const EntradaContable = () => {
         value: sistema.objectId,
       })),
     },
+
+    {
+      key: "cuentaId", // This is a custom key for our filter
+      label: "Cuenta contable",
+      type: "select",
+      options: cuentasContables.map(cuenta => ({
+        label: cuenta.descripcion,
+        value: cuenta.objectId
+      })),
+      // This indicates it's a special filter for nested arrays
+      customFilter: true
+    }
   ];
+
+  const customFilterFunction = (item, filters) => {
+    // Handle the cuentaId filter specially
+    const cuentaIdFilter = filters.cuentaId;
+    
+    if (cuentaIdFilter && cuentaIdFilter !== "") {
+      // Check if any detail in the array has this cuentaId
+      const hasMatchingCuenta = item.detalles?.some(
+        detail => detail.cuentaId === cuentaIdFilter
+      );
+      
+      if (!hasMatchingCuenta) {
+        return false;
+      }
+    }
+    
+    // Item passed the custom filter
+    return true;
+  };
   
 
   return (
@@ -124,6 +164,7 @@ const EntradaContable = () => {
       </div>
 
       <DataTable columns={columns} data={entradas}
+      customFilterFunction={customFilterFunction}
 
         filters={filters} />
 

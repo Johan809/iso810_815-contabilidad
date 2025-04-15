@@ -4,7 +4,7 @@ const API_URL = "/api/CuentaContable";
 
 export const getCuentasContables = async () => {
   try {
-    return await ApiService.get(API_URL);
+    return await ApiService.get(`${API_URL}?EsPaginable=false`);
   } catch (error) {
     console.error("Error fetching cuentas contables:", error);
     return [];

@@ -17,6 +17,7 @@ import {
   Search,
   HandCoins,
   FilterX,
+  Calendar,
 } from "lucide-react";
 import {
   Select,
@@ -26,6 +27,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 
 interface FilterOption {
   label: string;
@@ -35,8 +41,13 @@ interface FilterOption {
 export interface Filter {
   key: string;
   label: string;
-  type: "select" | "boolean" | "number" | "text";
+  type: "select" | "boolean" | "number" | "text" | "date";
   options?: FilterOption[];
+  dateConfig?: {
+    startKey?: string;
+    endKey?: string;
+  };
+  customFilter?: boolean; // Indicates this filter requires custom handling
 }
 
 interface Column {
@@ -57,6 +68,7 @@ interface DataTableProps {
     label: string;
     func: (item: object) => void;
   };
+  customFilterFunction?: (item: any, activeFilters: Record<string, any>) => boolean;
 }
 
 const DataTable: React.FC<DataTableProps> = ({
@@ -66,17 +78,19 @@ const DataTable: React.FC<DataTableProps> = ({
   onDelete,
   filters = [],
   onUpdate = null,
+  customFilterFunction,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
   const [showFilters, setShowFilters] = useState(false);
+  const [dateFilters, setDateFilters] = useState<Record<string, { from?: Date; to?: Date }>>({});
   const itemsPerPage = 8;
   const showActionsColumn = !!onEdit || !!onUpdate || !!onDelete;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeFilters, searchTerm]);
+  }, [activeFilters, searchTerm, dateFilters]);
 
   // Apply filters to data
   const filteredData = data.filter((item) => {
@@ -90,10 +104,21 @@ const DataTable: React.FC<DataTableProps> = ({
           value.toString().toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-    // Then apply specific filters
-    const matchesFilters = Object.entries(activeFilters).every(
+    // Apply custom filters if provided
+    if (customFilterFunction) {
+      if (!customFilterFunction(item, activeFilters)) {
+        return false;
+      }
+    }
+
+    // Then apply standard filters (excluding custom ones)
+    const standardFilters = Object.entries(activeFilters).filter(
+      ([key]) => !filters.find(f => f.key === key && f.customFilter)
+    );
+    
+    const matchesFilters = standardFilters.every(
       ([key, value]) => {
-        //ignoring null values
+        // Ignoring null values
         if (
           value === "" ||
           value === undefined ||
@@ -112,7 +137,47 @@ const DataTable: React.FC<DataTableProps> = ({
       }
     );
 
-    return matchesSearch && matchesFilters;
+    // Apply date filters
+    const matchesDateFilters = Object.entries(dateFilters).every(
+      ([key, { from, to }]) => {
+        if (!from && !to) return true;
+
+        const dateFilter = filters.find(f => f.key === key && f.type === "date");
+        if (!dateFilter) return true;
+
+        const value = item[key];
+        if (!value) return false;
+
+        // Parse the date from the item
+        const itemDate = value instanceof Date ? value : new Date(value);
+        
+        // Check if it's a valid date
+        if (isNaN(itemDate.getTime())) return false;
+
+        // Set time to start of day for comparison
+        const normalizedItemDate = new Date(itemDate);
+        normalizedItemDate.setHours(0, 0, 0, 0);
+
+        // Check if date is within range
+        let isInRange = true;
+        
+        if (from) {
+          const fromDate = new Date(from);
+          fromDate.setHours(0, 0, 0, 0);
+          isInRange = isInRange && normalizedItemDate >= fromDate;
+        }
+        
+        if (to) {
+          const toDate = new Date(to);
+          toDate.setHours(23, 59, 59, 999);
+          isInRange = isInRange && normalizedItemDate <= toDate;
+        }
+        
+        return isInRange;
+      }
+    );
+
+    return matchesSearch && matchesFilters && matchesDateFilters;
   });
 
   // Pagination
@@ -130,9 +195,23 @@ const DataTable: React.FC<DataTableProps> = ({
     }));
   };
 
+  const handleDateFilterChange = (key: string, type: 'from' | 'to', date?: Date) => {
+    setDateFilters(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        [type]: date
+      }
+    }));
+  };
+
   const clearFilters = () => {
     setActiveFilters({});
+    setDateFilters({});
   };
+
+  const hasActiveFilters = Object.keys(activeFilters).length > 0 || 
+    Object.values(dateFilters).some(filter => filter.from || filter.to);
 
   return (
     <div className="w-full space-y-4 animate-fade-in">
@@ -162,7 +241,7 @@ const DataTable: React.FC<DataTableProps> = ({
               {showFilters ? "Ocultar filtros" : "Mostrar filtros"}
             </Button>
 
-            {Object.keys(activeFilters).length > 0 && (
+            {hasActiveFilters && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -262,6 +341,85 @@ const DataTable: React.FC<DataTableProps> = ({
                       placeholder={`Filtrar por ${filter.label.toLowerCase()}`}
                     />
                   )}
+
+                  {filter.type === "date" && (
+                    <div className="flex flex-col space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !dateFilters[filter.key]?.from && "text-muted-foreground"
+                                )}
+                              >
+                                <Calendar className="mr-2 h-4 w-4" />
+                                {dateFilters[filter.key]?.from ? (
+                                  format(dateFilters[filter.key].from, "PPP", { locale: es })
+                                ) : (
+                                  <span>Desde</span>
+                                )}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <CalendarComponent
+                                mode="single"
+                                selected={dateFilters[filter.key]?.from}
+                                onSelect={(date) => handleDateFilterChange(filter.key, 'from', date)}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <div>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !dateFilters[filter.key]?.to && "text-muted-foreground"
+                                )}
+                              >
+                                <Calendar className="mr-2 h-4 w-4" />
+                                {dateFilters[filter.key]?.to ? (
+                                  format(dateFilters[filter.key].to, "PPP", { locale: es })
+                                ) : (
+                                  <span>Hasta</span>
+                                )}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <CalendarComponent
+                                mode="single"
+                                selected={dateFilters[filter.key]?.to}
+                                onSelect={(date) => handleDateFilterChange(filter.key, 'to', date)}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      </div>
+                      {dateFilters[filter.key]?.from || dateFilters[filter.key]?.to ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setDateFilters(prev => ({
+                              ...prev,
+                              [filter.key]: { from: undefined, to: undefined }
+                            }));
+                          }}
+                          className="text-xs self-end"
+                        >
+                          <FilterX className="h-3 w-3 mr-1" />
+                          Limpiar fecha
+                        </Button>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -281,7 +439,6 @@ const DataTable: React.FC<DataTableProps> = ({
               {showActionsColumn && (
                 <TableHead className="w-[100px] text-right">Acciones</TableHead>
               )}
-
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -298,40 +455,40 @@ const DataTable: React.FC<DataTableProps> = ({
                     </TableCell>
                   ))}
                   {showActionsColumn && (
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      {onEdit && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onEdit(item)}
-                          className="h-8 w-8 hover:text-primary"
-                          title="Editar"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {onUpdate && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onUpdate.func(item)}
-                          className="h-8 w-8 hover:text-primary"
-                          title={onUpdate.label}
-                        >
-                          {onUpdate.icon === "coin" && <HandCoins className="h-4 w-4" />}
-                        </Button>
-                      )}
-                      {/* puedes agregar onDelete aquí si lo implementas */}
-                    </div>
-                  </TableCell>
-                )}
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        {onEdit && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onEdit(item)}
+                            className="h-8 w-8 hover:text-primary"
+                            title="Editar"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {onUpdate && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onUpdate.func(item)}
+                            className="h-8 w-8 hover:text-primary"
+                            title={onUpdate.label}
+                          >
+                            {onUpdate.icon === "coin" && <HandCoins className="h-4 w-4" />}
+                          </Button>
+                        )}
+                        {/* puedes agregar onDelete aquí si lo implementas */}
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length + 1}
+                  colSpan={columns.length + (showActionsColumn ? 1 : 0)}
                   className="h-24 text-center"
                 >
                   No se encontraron resultados.
