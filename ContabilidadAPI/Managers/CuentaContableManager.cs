@@ -41,6 +41,23 @@ namespace ContabilidadAPI.Managers
             }
         }
 
+        public async Task<List<CuentaContable>> Buscar(List<string> objectidList)
+        {
+            try
+            {
+                if (objectidList == null || objectidList.Count == 0)
+                    return [];
+
+                var filtro = Builders<CuentaContable>.Filter.In(x => x.ObjectId, objectidList);
+                return await Context.CuentasContables.Find(filtro).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Error al buscar CuentaContable por ObjectIdList: {0}; EX: {1}", objectidList, ex);
+                throw new Exception(Constantes.ERROR_SERVIDOR);
+            }
+        }
+
         public async Task<List<CuentaContable>> Buscar(CuentaContable.Where where)
         {
             try
