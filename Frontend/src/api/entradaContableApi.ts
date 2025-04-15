@@ -3,7 +3,6 @@ import axios from "axios";
 
 const API_URL = "/api/EntradaContable";
 
-
 export const getEntradaContable = async () => {
   try {
     return await ApiService.get(`${API_URL}?EsPaginable=false`);

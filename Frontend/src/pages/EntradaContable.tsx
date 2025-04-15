@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import DataTable, { Filter } from "@/components/DataTable";
 import { useToast } from "@/hooks/use-toast";
-import { getEntradaContable, getEntradaContableById} from "@/api/entradaContableApi";
+import {
+  getEntradaContable,
+  getEntradaContableById,
+} from "@/api/entradaContableApi";
 import { getCuentasContables } from "@/api/cuentaContableApi";
 import { getSistemasAuxiliares } from "@/api/sistemaAuxiliarApi";
 import Modal from "@/components/Modal";
@@ -15,22 +18,18 @@ const EntradaContable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
-    
-
   useEffect(() => {
     getEntradaContable()
       .then(setEntradas)
       .catch(() =>
         toast({
-            
           title: "Error",
           description: "No se pudieron cargar las entradas contables",
           variant: "destructive",
         })
       );
 
-    getCuentasContables()
-      .then(setCuentasContables)
+    getCuentasContables().then(setCuentasContables);
 
     getSistemasAuxiliares()
       .then(setSistemasAuxiliares)
@@ -40,8 +39,8 @@ const EntradaContable = () => {
           description: "No se pudieron cargar los sistemas auxiliares",
           variant: "destructive",
         })
-      ); 
-  }, []);
+      );
+  }, [toast]);
 
   const openModal = async (id: number) => {
     const entrada = await getEntradaContableById(id);
@@ -62,28 +61,29 @@ const EntradaContable = () => {
     {
       key: "fechaAsiento",
       header: "Fecha",
-      render: (row) => new Date(row.fechaAsiento).toLocaleDateString("es-DO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }),
+      render: (row) =>
+        new Date(row.fechaAsiento).toLocaleDateString("es-DO", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
     },
     {
-        key: "sistemaAuxiliarId",
-        header: "Sistema Auxiliar",
-        render: (row) => {
-          const sistema = sistemasAuxiliares.find(
-            (sa) => sa.id === row.sistemaAuxiliarId
-          );
-          return sistema ? sistema.descripcion : "N/A";
-        }
+      key: "sistemaAuxiliarId",
+      header: "Sistema Auxiliar",
+      render: (row) => {
+        const sistema = sistemasAuxiliares.find(
+          (sa) => sa.id === row.sistemaAuxiliarId
+        );
+        return sistema ? sistema.descripcion : "N/A";
+      },
     },
 
     {
       key: "estadoDesc",
       header: "Estado",
     },
-    
+
     {
       key: "acciones",
       header: "Acciones",
@@ -108,7 +108,7 @@ const EntradaContable = () => {
     {
       key: "fechaAsiento",
       label: "Fecha de asiento",
-      type: "date"
+      type: "date",
     },
     {
       key: "sistemaAuxiliarId",
@@ -124,34 +124,33 @@ const EntradaContable = () => {
       key: "cuentaId", // This is a custom key for our filter
       label: "Cuenta contable",
       type: "select",
-      options: cuentasContables.map(cuenta => ({
+      options: cuentasContables.map((cuenta) => ({
         label: cuenta.descripcion,
-        value: cuenta.id
+        value: cuenta.id,
       })),
       // This indicates it's a special filter for nested arrays
-      customFilter: true
-    }
+      customFilter: true,
+    },
   ];
 
   const customFilterFunction = (item, filters) => {
     // Handle the cuentaId filter specially
     const cuentaIdFilter = Number(filters.cuentaId);
-    
+
     if (cuentaIdFilter) {
       // Check if any detail in the array has this cuentaId
       const hasMatchingCuenta = item.detalles?.some(
-        detail => detail.cuentaId === cuentaIdFilter
+        (detail) => detail.cuentaId === cuentaIdFilter
       );
-      
+
       if (!hasMatchingCuenta) {
         return false;
       }
     }
-    
+
     // Item passed the custom filter
     return true;
   };
-  
 
   return (
     <div className="space-y-6">
@@ -161,10 +160,12 @@ const EntradaContable = () => {
         {/* <Button onClick={() => {}}>+ Nueva Entrada</Button> */}
       </div>
 
-      <DataTable columns={columns} data={entradas}
-      customFilterFunction={customFilterFunction}
-
-        filters={filters} />
+      <DataTable
+        columns={columns}
+        data={entradas}
+        customFilterFunction={customFilterFunction}
+        filters={filters}
+      />
 
       <Modal
         isOpen={isModalOpen}
@@ -178,44 +179,50 @@ const EntradaContable = () => {
             </p>
             <p>
               <strong>Sistema Auxiliar:</strong>{" "}
-                {sistemasAuxiliares.find(
-                    (sa) => sa.id === selectedEntrada.sistemaAuxiliarId
-                )?.descripcion || "N/A"}
+              {sistemasAuxiliares.find(
+                (sa) => sa.id === selectedEntrada.sistemaAuxiliarId
+              )?.descripcion || "N/A"}
             </p>
             <p>
               <strong>Fecha del Asiento:</strong>{" "}
               {new Date(selectedEntrada.fechaAsiento).toLocaleDateString()}
             </p>
             <p>
-              <strong>Estado:</strong>{" "}
-                {selectedEntrada.estadoDesc}
+              <strong>Estado:</strong> {selectedEntrada.estadoDesc}
             </p>
             <div className="mt-4">
-              <p className="font-medium"><strong>Detalles:</strong></p>
+              <p className="font-medium">
+                <strong>Detalles:</strong>
+              </p>
               <table className="min-w-full border border-gray-300 text-sm">
                 <thead className="bg-gray-100">
-                    <tr>
+                  <tr>
                     <th className="px-4 py-2 text-left border-b">Cuenta</th>
                     <th className="px-4 py-2 text-left border-b">Movimiento</th>
                     <th className="px-4 py-2 text-left border-b">Monto</th>
-                    </tr>
+                  </tr>
                 </thead>
                 <tbody>
-                    {selectedEntrada.detalles?.map((d, i) => {
-                    const cuenta = cuentasContables.find((c) => c.id === d.cuentaId);
-                    return (
-                        <tr key={i} className="hover:bg-gray-50">
-                        <td className="px-4 py-2 border-b">
-                            {cuenta?.descripcion || "N/A"}
-                        </td>
-                        <td className="px-4 py-2 border-b">{d.tipoMovimientoDesc}</td>
-                        <td className="px-4 py-2 border-b">${d.montoAsiento.toFixed(2)}</td>
-                        </tr>
+                  {selectedEntrada.detalles?.map((d, i) => {
+                    const cuenta = cuentasContables.find(
+                      (c) => c.id === d.cuentaId
                     );
-                    })}
+                    return (
+                      <tr key={i} className="hover:bg-gray-50">
+                        <td className="px-4 py-2 border-b">
+                          {cuenta?.descripcion || "N/A"}
+                        </td>
+                        <td className="px-4 py-2 border-b">
+                          {d.tipoMovimientoDesc}
+                        </td>
+                        <td className="px-4 py-2 border-b">
+                          ${d.montoAsiento.toFixed(2)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
-                </table>
-
+              </table>
             </div>
           </div>
         )}
@@ -225,4 +232,3 @@ const EntradaContable = () => {
 };
 
 export default EntradaContable;
-

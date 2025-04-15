@@ -11,11 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useAuthentication } from "@/hooks/use-authentication";
 
 const Index = () => {
   const [modules, setModules] = useState([]);
-  const { login } = useAuthentication();
 
   useEffect(() => {
     async function fetchData() {
